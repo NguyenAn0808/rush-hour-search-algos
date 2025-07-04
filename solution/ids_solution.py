@@ -17,8 +17,8 @@ class IDS(Solution):
     
     def dls(self, start_node: Node, depth_limit) -> Node:
         # Push dô stack
-        Stack = deque([(self.initial_node, 0)])          
-        visited = {self.initial_node}
+        Stack = deque([(start_node, 0)])          
+        visited = {start_node}
 
         while len(Stack) != 0:
             # Expand node

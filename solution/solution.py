@@ -52,6 +52,7 @@ class Solution(ABC):
         print(f"Search Time: {self.search_time:.2f} seconds")
         print(f"Memory Usage: {self.memory_usage} MB")
         print(f"Total Cost: {self.total_cost}")
+        print(f"Step count:  {self.step_count}")
 
     @abstractmethod
     def find_path(self, goal_node: Node) -> list:
@@ -60,8 +61,8 @@ class Solution(ABC):
         while goal_node:
             path.append(goal_node)
             goal_node = goal_node.parent
-
-        print(f"Step count:  {len(path)}")
+        
+        self.step_count = len(path)
 
         path = reversed(path)
 

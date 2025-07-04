@@ -13,13 +13,15 @@ def process_memory():
     mem_info = process.memory_info()
     return mem_info.rss
 
-def main():
-    
-    with open("Map/expert.txt") as file:
+def read_map(path):
+    with open(path) as file:
         lines = [list(line.strip()) for line in file.readlines()]
 
     matrix = np.array(lines, dtype=str) # Matrix 10x10
 
+    return matrix
+
+def store_car(matrix):
     cars = defaultdict(list)
     all_cars = []
 
@@ -39,13 +41,14 @@ def main():
         
         car = Car(id = car_id, dir = dir, row = positions[0][0], col = positions[0][1], size = size)
         all_cars.append(car)
+    
+    return cars, all_cars
 
-    A = Node(cars=all_cars)
-    solution = AStar(A)
-                      
-    start_time = time.perf_counter()
+def calculate_used_resourcess(solution):
     # tracemalloc.start()
+    start_time = time.perf_counter()
     start_mem = process_memory()
+
     goal_node = solution.solve()
 
     # start_mem, end_mem = tracemalloc.get_traced_memory()
@@ -53,24 +56,37 @@ def main():
     tracemalloc.stop()
     end_time = time.perf_counter()
 
-    solution.search_time = end_time - start_time
-    solution.memory_usage = end_mem - start_mem
+    search_time = end_time - start_time
+    memory_usage = end_mem - start_mem    
+    
+    return goal_node, search_time, memory_usage
 
-    print(solution.memory_usage)
-
-    # solution.print_informations(goal_node)
-    # path = solution.find_path(goal_node)
-
-    # for i, node in enumerate(path):
-    #     print(f"\n-----Step {i} -----")
-    #     if i == 0:
-    #         print ("Initial node")
-    #     elif node.action:
-    #         print(f"Action : {node.action}")
+def print_path(path):
+    for i, node in enumerate(path):
+        print(f"\n-----Step {i} -----")
+        if i == 0:
+            print ("Initial node")
+        elif node.action:
+            print(f"Action : {node.action}")
         
-    #     print(node)
+        print(node)
 
-    # print("Goal node")
+    print("Goal node")
+
+def main():
+    map = read_map("Map/11.txt")
+
+    cars, all_cars = store_car(map)
+
+    A = Node(cars=all_cars)
+    solution = UCS(A)
+                    
+    goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
+
+    path = solution.find_path(goal_node)
+    solution.print_informations(goal_node)
+
+    print_path(path)
 
 if __name__ == "__main__":
     main()
