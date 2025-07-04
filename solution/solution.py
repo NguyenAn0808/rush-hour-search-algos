@@ -61,9 +61,14 @@ class Solution(ABC):
         while goal_node:
             path.append(goal_node)
             goal_node = goal_node.parent
+<<<<<<< Updated upstream
         
         self.step_count = len(path)
 
+=======
+
+        self.step_count = len(path)
+>>>>>>> Stashed changes
         path = reversed(path)
 
         return path

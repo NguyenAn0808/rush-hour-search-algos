@@ -6,6 +6,8 @@ from collections import deque
 MAX_DEPTH = 100
 
 class IDS(Solution):
+    name = "IDS"
+    
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return 0
     

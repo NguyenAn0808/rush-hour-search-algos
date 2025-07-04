@@ -5,6 +5,8 @@ from .solution import Solution
 from collections import deque
 
 class BFS(Solution):
+    name = "BFS"
+    
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return 0
     

@@ -9,6 +9,7 @@ class AStar(Solution):
     """
     A* search algorithm solution class.
     """
+    name = "AStar"
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return parent_cost + new_cost
 

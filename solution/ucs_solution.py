@@ -5,6 +5,8 @@ from .solution import Solution
 import heapq
 
 class UCS(Solution):
+    name = "UCS"
+    
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return parent_cost + new_cost
 
