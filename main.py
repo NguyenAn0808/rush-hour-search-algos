@@ -77,7 +77,7 @@ def main():
     map = read_map("Map/11.txt")
 
     cars, all_cars = store_car(map)
-
+    
     A = Node(cars=all_cars)
     solution = UCS(A)
                     
