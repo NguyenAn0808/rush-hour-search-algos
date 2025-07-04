@@ -2,11 +2,13 @@ from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
+import tracemalloc
 import numpy as np
 import time 
 import sys
 import os
 import psutil
+import os
 
 def process_memory():
     process = psutil.Process(os.getpid())
@@ -70,7 +72,9 @@ def calculate_used_resourcess(solution):
 
     goal_node = solution.solve()
 
+    # start_mem, end_mem = tracemalloc.get_traced_memory()
     end_mem = process_memory()
+    tracemalloc.stop()
     end_time = time.perf_counter()
 
 <<<<<<< Updated upstream
