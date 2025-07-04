@@ -3,7 +3,7 @@ from model import Node
 from .solution import Solution
 from collections import deque
 
-MAX_DEPTH = 1000
+MAX_DEPTH = 100
 
 class IDS(Solution):
     def calculate_cost(self, parent_cost: int, new_cost: int):
@@ -16,29 +16,26 @@ class IDS(Solution):
         return super().get_successors(current_node)
     
     def dls(self, start_node: Node, depth_limit) -> Node:
-        Stack = deque()          
-        visited = set()
-        
         # Push dô stack
-        Stack.appendleft((self.initial_node, [self.initial_node]))
+        Stack = deque([(self.initial_node, 0)])          
+        visited = {self.initial_node}
 
         while len(Stack) != 0:
             # Expand node
-            current_node, path = Stack.popleft()
+            current_node, depth = Stack.popleft()
             self.number_expanded_nodes += 1
 
-            if len(path) - 1 >= depth_limit:
+            if current_node.is_goal():
+                return current_node
+            
+            if depth >= depth_limit:
                 continue
 
             for new_node in self.get_successors(current_node):   
-                if new_node.is_goal():
-                    return new_node
-                
-                if new_node not in visited:
-                    new_path = path + [new_node]              
+                if new_node not in visited:          
                     new_node.parent = current_node
 
-                    Stack.appendleft((new_node, new_path))
+                    Stack.appendleft((new_node, depth + 1))
                     visited.add(new_node)         
 
         return None

@@ -28,9 +28,6 @@ class UCS(Solution):
             if current_node.cost > path_cost[current_node]:
                 continue
             
-            # print(current_node)
-            # print(f"f(n) = {current_node.cost + current_node.heuristic}, g(n) = {current_node.cost}, h(n) = {current_node.heuristic}")
-            
             if current_node.is_goal():
                 self.total_cost = current_node.cost
                 

@@ -2,13 +2,20 @@ from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
+import tracemalloc
 import numpy as np
 import time 
-from queue import Queue
+import psutil
+import os
+
+def process_memory():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+    return mem_info.rss
 
 def main():
     
-    with open("Map/3.txt") as file:
+    with open("Map/expert.txt") as file:
         lines = [list(line.strip()) for line in file.readlines()]
 
     matrix = np.array(lines, dtype=str) # Matrix 10x10
@@ -34,17 +41,26 @@ def main():
         all_cars.append(car)
 
     A = Node(cars=all_cars)
-    solution = IDS(A)
+    solution = AStar(A)
                       
     start_time = time.perf_counter()
+    # tracemalloc.start()
+    start_mem = process_memory()
     goal_node = solution.solve()
+
+    # start_mem, end_mem = tracemalloc.get_traced_memory()
+    end_mem = process_memory()
+    tracemalloc.stop()
     end_time = time.perf_counter()
 
     solution.search_time = end_time - start_time
-    
-    solution.print_informations(goal_node)
-    path = solution.find_path(goal_node)
-    
+    solution.memory_usage = end_mem - start_mem
+
+    print(solution.memory_usage)
+
+    # solution.print_informations(goal_node)
+    # path = solution.find_path(goal_node)
+
     # for i, node in enumerate(path):
     #     print(f"\n-----Step {i} -----")
     #     if i == 0:
