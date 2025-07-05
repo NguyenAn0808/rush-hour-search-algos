@@ -10,6 +10,7 @@ class AStar(Solution):
     A* search algorithm solution class.
     """
     name = "AStar"
+    
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return parent_cost + new_cost
 
@@ -20,7 +21,7 @@ class AStar(Solution):
         return super().get_successors(current_node)
     
     def solve(self) -> Node:
-        priority_queue = []
+        priority_queue = [] 
         path_cost = {} # Store g(n) of each node and update if it's optimal
 
         f_n = self.initial_node.cost + self.initial_node.heuristic

@@ -1,4 +1,4 @@
-from solution import AStar, UCS, BFS, IDS
+"""from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
@@ -90,3 +90,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""
+
+from game_app.game_app import GameApp
+
+if __name__ == "__main__":
+    app = GameApp()
+    app.run()

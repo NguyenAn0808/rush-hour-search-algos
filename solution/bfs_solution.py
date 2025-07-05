@@ -1,12 +1,11 @@
 from __future__ import annotations  # Allows a class to contain type hints that refer to itself. We use Node instead of 'Node'
 from model import Node
 from .solution import Solution
-
 from collections import deque
 
 class BFS(Solution):
     name = "BFS"
-    
+        
     def calculate_cost(self, parent_cost: int, new_cost: int):
         return 0
     
