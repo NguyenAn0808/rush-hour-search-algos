@@ -1,4 +1,5 @@
-"""from solution import AStar, UCS, BFS, IDS
+"""
+from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
@@ -74,19 +75,39 @@ def print_path(path):
     print("Goal node")
 
 def main():
+    # X X X X X X X X X X
+    # X X X X X X X X X X
+    # X X - - - Y Y Y X X
+    # X X - - - - - - X X
+    # X X - - A G G F - -
+    # X X E E A - D F X X
+    # X X C - A - D F X X
+    # X X C - B B B - X X
+    # X X X X X X X X X X
+    # X X X X X X X X X X
+
+    # "X": outside play area, "-": possible position, "alphabet": car/truck 
+    # map: save as matrix
     map = read_map("Map/11.txt")
 
+    # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
     cars, all_cars = store_car(map)
     
     A = Node(cars=all_cars)
+    # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
     solution = UCS(A)
-                    
-    goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
 
+    # goal_node = goal state            
+    goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
+    
+    # path: list of states in solution path 
     path = solution.find_path(goal_node)
+
+    # print number of expanded nodes, search time, memory usage, total cost, step count
     solution.print_informations(goal_node)
 
-    print_path(path)
+    # print solution path
+    # print_path(path)
 
 if __name__ == "__main__":
     main()
