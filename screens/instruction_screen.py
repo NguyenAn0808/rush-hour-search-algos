@@ -6,7 +6,7 @@ class InstructionScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.message = "Welcome to Rush Hour!\nGoal: Move the RED car out of the board."
-        self.button_back = Button(20, 650, 100, 40, "Back", self.on_back)
+        self.button_back = Button(20, 600, 100, 40, "Back", self.on_back)
         self.font = pygame.font.SysFont("Arial", 22)
 
     def render(self):
