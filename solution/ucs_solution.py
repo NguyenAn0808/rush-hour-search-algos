@@ -17,14 +17,14 @@ class UCS(Solution):
         return super().get_successors(current_node)
     
     def solve(self) -> Node:
-        priority_queue = []
+        frontier = []
         path_cost = {} # Store g(n) of each node and update if it's optimal
 
-        heapq.heappush(priority_queue, (0, self.initial_node))
+        heapq.heappush(frontier, (0, self.initial_node))
         path_cost[self.initial_node] = self.initial_node.cost
 
-        while priority_queue:
-            f_cost, current_node = heapq.heappop(priority_queue)
+        while frontier:
+            f_cost, current_node = heapq.heappop(frontier)
 
             # Crucial
             if current_node.cost > path_cost[current_node]:
@@ -41,7 +41,7 @@ class UCS(Solution):
                 if node not in path_cost or node.cost < path_cost[node]:
                     path_cost[node] = node.cost
                     node.parent = current_node
-                    heapq.heappush(priority_queue, (node.cost, node))
+                    heapq.heappush(frontier, (node.cost, node))
                     
         raise ValueError("The puzzle cannot be solved. No solution found.")
     

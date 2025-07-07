@@ -2,7 +2,7 @@ from __future__ import annotations  # Allows a class to contain type hints that 
 from model import Node
 from .solution import Solution
 
-from solution.heuristic import evaluate_distance_heuristic
+from solution.heuristic import evaluate_advanced_heuristic
 import heapq  # Importing heapq for priority queue implementation
 
 class AStar(Solution):
@@ -15,7 +15,7 @@ class AStar(Solution):
         return parent_cost + new_cost
 
     def calculate_heuristic(self, current_node: Node):
-        return evaluate_distance_heuristic(current_node.cars)
+        return evaluate_advanced_heuristic(current_node.cars)
 
     def get_successors(self, current_node):
         return super().get_successors(current_node)
@@ -36,7 +36,7 @@ class AStar(Solution):
             f_cost, current_node = heapq.heappop(priority_queue)
 
             # Crucial
-            if current_node in path_cost and current_node.cost > path_cost[current_node]:
+            if current_node.cost > path_cost[current_node]:
                 continue
     
             if current_node.is_goal():
