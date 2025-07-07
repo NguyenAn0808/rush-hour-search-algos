@@ -22,8 +22,5 @@ class Game:
         
         #Display message
         self.message = ""
-        
-
-       # self.display_game()
 
 

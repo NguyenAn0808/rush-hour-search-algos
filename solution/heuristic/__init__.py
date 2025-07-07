@@ -1,2 +1,4 @@
-from .advance_heuristic import evaluate_advanced_heuristic
+from .advanced_heuristic import evaluate_advanced_heuristic
 from .blocking_heuristic import evaluate_blocking_heuristic
+from .distance_heuristic import evaluate_distance_heuristic
+from .h2_heuristic import evaluate_h2_heuristic

@@ -58,11 +58,9 @@ def evaluate_advanced_heuristic(cars: list[Car]) -> int:
 
     # Try to move the blockers
     for col in range(goal_car.col + goal_car.size, 8):
-        cell = (goal_car.row, col)
-
-        if cell in cell_of_cars:
+        cell = (goal_car.row, col)      
+        if cell in cell_of_cars:    
             blocker_car = cell_of_cars[cell]
-
             visited = {goal_car.id} # Check no cycle for the moving blocker 
             
             blockers += 1

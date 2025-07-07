@@ -62,7 +62,7 @@ class Solution(ABC):
             path.append(goal_node)
             goal_node = goal_node.parent
         
-        self.step_count = len(path)
+        self.step_count = len(path) - 1
 
         path = reversed(path)
 

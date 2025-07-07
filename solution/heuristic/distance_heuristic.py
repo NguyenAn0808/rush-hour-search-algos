@@ -1,6 +1,6 @@
 from model.car import Car
 
-def evaluate_heuristic(cars: list[Car]) -> int:
+def evaluate_distance_heuristic(cars: list[Car]) -> int:
     """
     Counts how many number of blocker cars block goal car.
     Calculates the distance to exit gate from goal car 

@@ -1,7 +1,7 @@
 from model.car import Car
 from typing import Dict, List, Optional, Tuple, Set
 
-def evaluate_heuristic(cars: list[Car]) -> int:
+def evaluate_h2_heuristic(cars: list[Car]) -> int:
     """
     Calculates a heuristic by following a single, deterministic dependency chain,
     correctly tracking the collision point to determine move direction and path.

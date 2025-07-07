@@ -1,4 +1,3 @@
-"""
 from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
@@ -22,7 +21,7 @@ def read_map(path):
 
     return matrix
 
-def store_car(matrix):
+def store_car(matrix):  
     cars = defaultdict(list)
     all_cars = []
 
@@ -43,7 +42,7 @@ def store_car(matrix):
         car = Car(id = car_id, dir = dir, row = positions[0][0], col = positions[0][1], size = size)
         all_cars.append(car)
     
-    return cars, all_cars
+    return all_cars
 
 def calculate_used_resourcess(solution):
     # tracemalloc.start()
@@ -91,11 +90,11 @@ def main():
     map = read_map("Map/11.txt")
 
     # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
-    cars, all_cars = store_car(map)
+    all_cars = store_car(map)
     
     A = Node(cars=all_cars)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = UCS(A)
+    solution = AStar(A)
 
     # goal_node = goal state            
     goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
@@ -106,14 +105,13 @@ def main():
     # print number of expanded nodes, search time, memory usage, total cost, step count
     solution.print_informations(goal_node)
 
-    # print solution path
+    # # print solution path
     # print_path(path)
 
 if __name__ == "__main__":
     main()
-"""
 
-from game_app.game_app import GameApp
-if __name__ == "__main__":
-    app = GameApp()
-    app.run()
+# from game_app.game_app import GameApp
+# if __name__ == "__main__":
+#     app = GameApp()
+#     app.run()
