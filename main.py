@@ -108,10 +108,10 @@ def main():
     # # print solution path
     # print_path(path)
 
-if __name__ == "__main__":
-    main()
-
-# from game_app.game_app import GameApp
 # if __name__ == "__main__":
-#     app = GameApp()
-#     app.run()
+#   main()
+
+from game_app.game_app import GameApp
+if __name__ == "__main__":
+     app = GameApp()
+     app.run()

@@ -1,6 +1,13 @@
+import os
+from utils import read_map, store_car
+from model.node import Node
+import numpy as np
+from model.car import Car
 import pygame
 from ui.button import Button
 from screens.map_editor_screen import MapEditorScreen
+from popups.select_level_popup import SelectLevelPopup
+from screens.solver_screen import SolverScreen
 from popups.select_level_popup import SelectLevelPopup
 
 class SelectMapPopup:
@@ -30,5 +37,22 @@ class SelectMapPopup:
     def on_custom(self):
         self.app.switch_screen(MapEditorScreen(self.app))
 
+
     def on_default(self):
+        if self in self.parent.popups:
+            self.parent.popups.remove(self)
+            
         self.parent.popups.append(SelectLevelPopup(self.app, self.parent))
+
+        
+        # map_path = "Map/11.txt"
+        # map = read_map(map_path)
+        # level_number = os.path.basename(map_path).split('.')[0]  # '11'
+        # level_name = f"Level {level_number}"
+        # # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
+        # all_cars = store_car(map)
+        
+        # A = Node(cars=all_cars)
+        # initial_node = A  # build from selected map
+        # self.app.switch_screen(SolverScreen(self.app, initial_node, level_name))
+        

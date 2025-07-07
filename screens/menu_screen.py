@@ -1,18 +1,21 @@
 import pygame
 from screens.screen import Screen
 from ui.button import Button
+from ui.icon_button import IconButton
 
 class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.buttons = [
             Button(260, 200, 200, 50, "Play", self.on_play),
-            Button(260, 280, 200, 50, "Settings", self.on_settings),
-            Button(260, 360, 200, 50, "Instructions", self.on_instructions),
+            Button(260, 280, 200, 50, "Instructions", self.on_instructions),
+            # Button(260, 360, 200, 50, "Credits", self.on_credits),
             Button(260, 440, 200, 50, "Quit", self.on_quit),
+            IconButton(600, 50, "assets/settings.png", self.on_settings, 36)
         ]
         self.background_img = pygame.image.load("assets/menu_bg.jpg").convert()
         self.title_font = pygame.font.SysFont("Arial", 48, bold=True)
+        self.popups = []
 
     def render(self):
         # Draw background
@@ -38,11 +41,14 @@ class MenuScreen(Screen):
                     popup.handle_input(event)
 
     def on_play(self):
-        from popups.select_map_popup import SelectMapPopup
-        self.popups.append(SelectMapPopup(self.app, self))
+        # from popups.select_map_popup import SelectMapPopup
+        from popups.select_level_popup import SelectLevelPopup
+        self.popups.append(SelectLevelPopup(self.app, self))
+       
 
     def on_settings(self):
-        print("⚙️ Settings clicked")
+        from popups.settings_popup import SettingsPopup
+        self.popups.append(SettingsPopup(self.app, self))
 
     def on_instructions(self):
         from screens.instruction_screen import InstructionScreen

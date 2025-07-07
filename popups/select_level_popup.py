@@ -45,8 +45,11 @@ class SelectLevelPopup:
 
     def select_level(self, level):
         print(f"[DEBUG] select_level called with level = {level}")
+        from screens.preview_screen import PreviewLevelScreen
         node = load_map_level(level)
-        self.app.switch_screen(SolverScreen(self.app, node))
+        level_name = f"Level {level}"
+        self.app.switch_screen(PreviewLevelScreen(self.app, node, level_name))
+
 
     def on_back(self):
         self.parent.popups.remove(self)

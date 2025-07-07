@@ -16,3 +16,4 @@ class Button:
 
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
+

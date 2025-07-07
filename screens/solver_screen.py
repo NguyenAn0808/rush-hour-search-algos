@@ -1,3 +1,4 @@
+import time
 import pygame
 from screens.screen import Screen
 from ui.button import Button
@@ -5,59 +6,281 @@ from solution import BFS, IDS, UCS, AStar
 
 CELL_SIZE = 80
 GRID_SIZE = 6
-MARGIN = 30
+MARGIN = 60
+
+# Colors
+DESERT_SAND = (210, 180, 140)
+GRID_BORDER = (70, 130, 180)
+GRID_BACKGROUND = (176, 196, 222)
+EXIT_ARROW = (255, 255, 255)
 
 class SolverScreen(Screen):
-    def __init__(self, app, initial_node):
+    def __init__(self, app, initial_node, level_number=""):
         super().__init__(app)
         self.node = initial_node
+        self.level_number = level_number
         self.step = 0
         self.solution_path = []
         self.solver = None
+        self.state = 'idle'  # states: idle, solving, paused, finished
+        self.stats = None
+        self.timer = 0
+        self.step_delay = 0.7  # seconds between steps
 
-        self.btn_bfs = Button(50, 620, 100, 40, "BFS", lambda: self.solve(BFS))
-        self.btn_ids = Button(160, 620, 100, 40, "IDS", lambda: self.solve(IDS))
-        self.btn_ucs = Button(270, 620, 100, 40, "UCS", lambda: self.solve(UCS))
-        self.btn_astar = Button(380, 620, 100, 40, "A*", lambda: self.solve(AStar))
-
-        self.font = pygame.font.SysFont("Arial", 18)
+        self.btn_bfs = Button(580, 10, 100, 40, "BFS", lambda: self.solve(BFS))
+        self.btn_ids = Button(580, 60, 100, 40, "IDS", lambda: self.solve(IDS))
+        self.btn_ucs = Button(580, 110, 100, 40, "UCS", lambda: self.solve(UCS))
+        self.btn_astar = Button(580, 160, 100, 40, "A*", lambda: self.solve(AStar))
+        self.button_back = Button(30, 580, 100, 40, "Back", self.on_back)
+        self.button_pause = Button(150, 580, 100, 40, "Pause", self.on_pause)
+        self.button_reset = Button(270, 580, 100, 40, "Reset", self.on_reset)
+        self.font = pygame.font.SysFont("Arial", 20)
 
     def render(self):
-        self.app.screen.fill((250, 240, 255))
-        if self.solution_path:
-            self.draw_board(self.solution_path[self.step])
-        else:
-            self.draw_board(self.node)
+        self.draw_background()
+        self.draw_blue_striped_border()
 
-        for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar]:
+        title_text = self.font.render(f"{self.level_number}", True, (0, 0, 0))
+        title_rect = title_text.get_rect(center=(self.app.screen.get_width() // 2, 20))
+        self.app.screen.blit(title_text, title_rect)
+        # Animate step-by-step solving
+        if self.state == 'solving' and self.solution_path:
+            if time.time() - self.timer > self.step_delay:
+                self.timer = time.time()
+                if self.step < len(self.solution_path) - 1:
+                    self.step += 1
+                else:
+                    self.state = 'finished'
+
+        # Draw the current board state
+        current_node = self.solution_path[self.step] if self.solution_path else self.node
+        self.draw_board(current_node)
+
+        # Draw step and cost info under the board
+        self.draw_step_info(current_node)
+
+        # Draw control buttons
+        for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
             btn.draw(self.app.screen)
+
+        # Draw final stats
+        if self.state == 'finished' and self.stats:
+            self.draw_stats()
 
     def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
-                for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar]:
+                # print(event.pos)
+                for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
 
     def draw_board(self, node):
         board = node.state
+        
+        # Car color cache
+        if not hasattr(self, 'car_colors'):
+            self.car_colors = {}
+
+        color_palette = [
+            (100, 150, 250),  # blue
+            (255, 200, 0),    # yellow
+            (0, 200, 100),    # green
+            (255, 105, 180),  # pink
+            (138, 43, 226),   # purple
+            (255, 165, 0),    # orange
+            (60, 179, 113),   # medium sea green
+            (255, 255, 255),  # white
+            (0, 206, 209),    # turquoise
+            (186, 85, 211),   # medium orchid
+        ]
+        color_index = 0
+
         for i in range(2, 8):
             for j in range(2, 8):
                 val = board[i][j]
                 rect = pygame.Rect(MARGIN + (j - 2) * CELL_SIZE, MARGIN + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(self.app.screen, (220, 220, 220), rect, 1)
+
                 if val != '-':
-                    color = (255, 100, 100) if val == 'G' else (100, 150, 250)
+                    if val == 'G':
+                        color = (255, 100, 100)  # Red goal car
+                    else:
+                        if val not in self.car_colors:
+                            self.car_colors[val] = color_palette[color_index % len(color_palette)]
+                            color_index += 1
+                        color = self.car_colors[val]
+
                     pygame.draw.rect(self.app.screen, color, rect)
 
+    def draw_background(self):
+        # Desert background with decorative elements
+        self.app.screen.fill(DESERT_SAND)
+        # Road to the right
+        pygame.draw.rect(self.app.screen, (230, 230, 230), (MARGIN + GRID_SIZE * CELL_SIZE, MARGIN + 2 * CELL_SIZE, 100, CELL_SIZE))
+
+        # Cactus Positions (corners and side gaps)
+        cactus_positions = [
+            (611, 374),
+            (672, 550),
+            (2, 49),
+            (2, 285), 
+            (481, 587),
+            (3, 472)
+        ]
+
+        for x, y in cactus_positions:
+            self.draw_cactus(x, y)
+
+        # Traffic Cones near entrance/exit and bottom
+        cone_positions = [
+            (135, 20),
+            (15, 164),
+            (422, 594),
+            (688, 486),
+            (642, 324),
+            (695, 213),
+            (78, 603)
+        ]
+
+        for x, y in cone_positions:
+            self.draw_cone(x, y)
+
+
+
+    def draw_blue_striped_border(self):
+        stripe_size = CELL_SIZE // 4
+        grid_left = MARGIN
+        grid_top = MARGIN
+        grid_right = grid_left + GRID_SIZE * CELL_SIZE
+        grid_bottom = grid_top + GRID_SIZE * CELL_SIZE
+        exit_row = 2  # red car is always on row 2
+        exit_y = grid_top + exit_row * CELL_SIZE
+        stripe_colors = [(80, 180, 255), (255, 255, 255)]
+
+        # ─ Top border
+        for i in range(-stripe_size, GRID_SIZE * CELL_SIZE + stripe_size, stripe_size):
+            color = stripe_colors[(i // stripe_size) % 2]
+            pygame.draw.rect(self.app.screen, color, (grid_left + i, grid_top - stripe_size, stripe_size, stripe_size))
+
+        # ─ Bottom border
+        for i in range(-stripe_size, GRID_SIZE * CELL_SIZE + stripe_size, stripe_size):
+            color = stripe_colors[(i // stripe_size) % 2]
+            pygame.draw.rect(self.app.screen, color, (grid_left + i, grid_bottom, stripe_size, stripe_size))
+
+        # │ Left border
+        for i in range(-stripe_size, GRID_SIZE * CELL_SIZE + stripe_size, stripe_size):
+            color = stripe_colors[(i // stripe_size) % 2]
+            pygame.draw.rect(self.app.screen, color, (grid_left - stripe_size, grid_top + i, stripe_size, stripe_size))
+
+        # │ Right border — skip exit row
+        for row in range(GRID_SIZE):
+            if row == exit_row:
+                continue
+            y_start = grid_top + row * CELL_SIZE
+            for i in range(0, CELL_SIZE, stripe_size):
+                color = stripe_colors[(i // stripe_size) % 2]
+                pygame.draw.rect(self.app.screen, color, (grid_right, y_start + i, stripe_size, stripe_size))
+
+        # ➤ Exit tunnel side walls (top and bottom only — aligned to grid)
+        tunnel_length = CELL_SIZE
+        for i in range(0, tunnel_length, stripe_size):
+            color = stripe_colors[(i // stripe_size) % 2]
+            # Top edge of exit tunnel
+            pygame.draw.rect(self.app.screen, color, (grid_right + i, exit_y - 20, stripe_size, stripe_size))
+            # Bottom edge of exit tunnel
+            pygame.draw.rect(self.app.screen, color, (grid_right + i, exit_y + CELL_SIZE - stripe_size + 20, stripe_size, stripe_size))
+
+
+    def draw_step_info(self, current_node):
+        font = pygame.font.SysFont("Arial", 20)
+        step_text = f"Step: {self.step}/{len(self.solution_path)-1 if self.solution_path else 0}"
+        cost_text = f"Total Cost: {current_node.cost}"
+
+        step_surface = font.render(step_text, True, (0, 0, 0))
+        cost_surface = font.render(cost_text, True, (0, 0, 0))
+
+        board_bottom_y = MARGIN + GRID_SIZE * CELL_SIZE + 10
+        self.app.screen.blit(step_surface, (MARGIN, board_bottom_y))
+        self.app.screen.blit(cost_surface, (MARGIN + 200, board_bottom_y))
+
+    def draw_cactus(self, x, y):
+        # Main stem
+        pygame.draw.rect(self.app.screen, (34, 139, 34), (x + 8, y, 14, 50), border_radius=4)
+
+        # Left arm
+        pygame.draw.rect(self.app.screen, (34, 139, 34), (x - 2, y + 15, 10, 20), border_radius=4)
+        pygame.draw.rect(self.app.screen, (34, 139, 34), (x + 2, y + 25, 10, 10), border_radius=4)
+
+        # Right arm
+        pygame.draw.rect(self.app.screen, (34, 139, 34), (x + 20, y + 20, 10, 20), border_radius=4)
+        pygame.draw.rect(self.app.screen, (34, 139, 34), (x + 18, y + 30, 10, 10), border_radius=4)
+
+        # Cactus base shadow
+        pygame.draw.ellipse(self.app.screen, (0, 100, 0), (x + 4, y + 48, 20, 6))
+
+
+    def draw_cone(self, x, y):
+        # Cone base
+        pygame.draw.rect(self.app.screen, (255, 140, 0), (x, y + 20, 14, 6))  # base
+        pygame.draw.polygon(self.app.screen, (255, 140, 0), [(x + 7, y), (x, y + 20), (x + 14, y + 20)])  # cone
+        pygame.draw.rect(self.app.screen, (255, 255, 255), (x + 3, y + 10, 8, 4))  # stripe
+
     def solve(self, solver_class):
-        solver = solver_class
-        result = solver.solve(self.node)
-        if isinstance(result, list):
-            self.solution_path = result
+        solver = solver_class(self.node)
+
+        start = time.time()
+        goal_node = solver.solve()
+        end = time.time()
+
+        if goal_node:
+            self.solution_path = list(solver.find_path(goal_node))
             self.step = 0
-            print("✅ Found solution!")
+            self.timer = time.time()
+            self.state = 'solving'
+
+            # Collect stats from the solver instance
+            self.stats = {
+                "Steps": solver.step_count,
+                "Time": round(end - start, 3),
+                "Nodes": solver.number_expanded_nodes,
+                "Memory": solver.memory_usage,
+                "Cost": solver.total_cost
+            }
+            print("Found solution!")
         else:
-            print("❌ No solution.")
+            self.state = 'finished'
+            self.stats = {"Message": "No solution found"}
+            print("No solution.")
+
+    
+    def on_back(self):
+        from screens.menu_screen import MenuScreen
+        self.app.switch_screen(MenuScreen(self.app))
+
+    def on_pause(self):
+        if self.state == 'solving':
+            self.state = 'paused'
+            self.button_pause.label = "Resume"
+        elif self.state == 'paused':
+            self.state = 'solving'
+            self.timer = time.time()
+            self.button_pause.label = "Pause"
+
+    def on_reset(self):
+        self.step = 0
+        self.state = 'idle'
+        self.solution_path = []
+        self.stats = None
+        self.button_pause.label = "Pause"
+
+    def draw_stats(self):
+        font = pygame.font.SysFont("Arial", 18)
+        y = 370
+
+        for key, val in self.stats.items():
+            text = font.render(f"{key}: {val}", True, (0, 0, 0))
+            self.app.screen.blit(text, (600, y))
+            y += 25
