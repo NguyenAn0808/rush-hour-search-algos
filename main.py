@@ -1,4 +1,4 @@
-from solution import AStar, UCS, BFS, IDS
+"""from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
@@ -94,7 +94,7 @@ def main():
     
     A = Node(cars=all_cars)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = AStar(A)
+    solution = UCS(A)
 
     # goal_node = goal state            
     goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
@@ -108,10 +108,11 @@ def main():
     # # print solution path
     # print_path(path)
 
-# if __name__ == "__main__":
-#   main()
-
-from game_app.game_app import GameApp
 if __name__ == "__main__":
-     app = GameApp()
-     app.run()
+  main()
+"""
+from game_app.game_app import GameApp
+
+if __name__ == "__main__":
+      app = GameApp()
+      app.run()

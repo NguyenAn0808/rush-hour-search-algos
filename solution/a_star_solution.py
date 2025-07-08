@@ -39,17 +39,17 @@ class AStar(Solution):
             if current_node.cost > path_cost[current_node]:
                 continue
     
+            self.number_expanded_nodes += 1
+
             if current_node.is_goal():
                 self.total_cost = current_node.cost
                 return current_node
         
-            self.number_expanded_nodes += 1
-
-            for node in self.get_successors(current_node):
-                if node not in path_cost or node.cost < path_cost[node]:
-                    path_cost[node] = node.cost
-                    node.parent = current_node
-                    heapq.heappush(priority_queue, (node.cost + node.heuristic, node))
+            for neighbor in self.get_successors(current_node):
+                if neighbor not in path_cost or neighbor.cost < path_cost[neighbor]:
+                    path_cost[neighbor] = neighbor.cost
+                    neighbor.parent = current_node
+                    heapq.heappush(priority_queue, (neighbor.cost + neighbor.heuristic, neighbor))
                     
         raise ValueError("The puzzle cannot be solved. No solution found.")
     
