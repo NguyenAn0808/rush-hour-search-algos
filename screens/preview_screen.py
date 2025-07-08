@@ -13,10 +13,9 @@ class PreviewLevelScreen(Screen):
         self.font = pygame.font.SysFont("Arial", 26, bold=True)
         self.sub_font = pygame.font.SysFont("Arial", 18)
 
-        self.button_start = Button(220, 570, 100, 40, "Start", self.on_start)
-        self.button_back = Button(420, 570, 100, 40, "Back", self.on_back)
+        self.button_start = Button(220, 570, 100, 40, "Start", self.on_start, self.app)
+        self.button_back = Button(420, 570, 100, 40, "Back", self.on_back, self.app)
 
-        print(f"[DEBUG] Preview screen loaded for {level_name}")
 
     def render(self):
         self.app.screen.fill((245, 235, 215))

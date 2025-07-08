@@ -29,8 +29,8 @@ class MapEditorScreen(Screen):
         self.current_dir = 'h'
         self.car_length = 2
 
-        self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car)
-        self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve)
+        self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
+        self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
         self.font = pygame.font.SysFont("Arial", 18)
 
         self.color_buttons = []
@@ -39,8 +39,8 @@ class MapEditorScreen(Screen):
             btn = Button(580, 50 + i * 50, 40, 40, '', lambda c=color_id: self.select_color(c), bg_color=CAR_COLORS[color_id])
             self.color_buttons.append(btn)
 
-        self.toggle_dir_button = Button(580, 320, 100, 30, "Dir: H", self.toggle_direction)
-        self.length_button = Button(580, 360, 100, 30, "Len: 2", self.toggle_length)
+        self.toggle_dir_button = Button(580, 320, 100, 30, "Dir: H", self.toggle_direction, self.app)
+        self.length_button = Button(580, 360, 100, 30, "Len: 2", self.toggle_length, self.app)
 
         self.selected_cell = None
 
@@ -138,7 +138,7 @@ class MapEditorScreen(Screen):
             # Xóa nút màu đã chọn khỏi danh sách
             self.available_colors.remove(self.selected_color)
             self.color_buttons = [
-               Button(580, 50 + i * 50, 40, 40, '', lambda c=color_id: self.select_color(c), bg_color=CAR_COLORS[color_id])
+               Button(580, 50 + i * 50, 40, 40, '', lambda c=color_id: self.select_color(c), self.app, bg_color=CAR_COLORS[color_id])
                for i, color_id in enumerate(self.available_colors)
             ]
             if self.available_colors:

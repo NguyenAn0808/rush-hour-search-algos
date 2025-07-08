@@ -10,7 +10,7 @@ class SettingsPopup:
         self.parent = parent_screen
         self.font = pygame.font.SysFont("Arial", 22)
 
-        self.btn_close = Button(300, 430, 120, 40, "Close", self.on_close)
+        self.btn_close = Button(300, 430, 120, 40, "Close", self.on_close, self.app)
         
         # Icon toggles
         self.sound_toggle = IconToggleButton(
@@ -82,12 +82,10 @@ class SettingsPopup:
                     btn.on_click()
     
     def toggle_sound(self, enabled):
-        self.sound_enabled = enabled
-        print(f"[DEBUG] Sound {'ON' if enabled else 'OFF'}")
+        self.app.sound.toggle_sound()
 
     def toggle_music(self, enabled):
-        self.music_enabled = enabled
-        print(f"[DEBUG] Music {'ON' if enabled else 'OFF'}")
+        self.app.sound.toggle_music()
 
     def on_close(self):
         if hasattr(self.parent, "popups") and self in self.parent.popups:

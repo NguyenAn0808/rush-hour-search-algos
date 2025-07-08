@@ -7,7 +7,7 @@ class CreditsScreen(Screen):
         super().__init__(app)
         self.font_title = pygame.font.SysFont("Arial", 30, bold=True)
         self.font_body = pygame.font.SysFont("Segoe UI", 20)
-        self.btn_back = Button(280, 560, 160, 40, "Back", self.on_back)
+        self.btn_back = Button(280, 560, 160, 40, "Back", self.on_back, self.app)
 
     def render(self):
         self.draw_background()

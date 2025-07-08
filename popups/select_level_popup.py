@@ -43,12 +43,12 @@ class SelectLevelPopup:
                     bg_color = (200, 0, 0)       # HARD - red
 
                 self.buttons.append(
-                    Button(x, y, 50, 40, str(level_num), make_callback(level_num),
+                    Button(x, y, 50, 40, str(level_num), make_callback(level_num), self.app,
                            bg_color=bg_color, text_color=(255, 255, 255))
                 )
 
         # Back
-        self.btn_back = Button(295, 470, 120, 40, "Back", self.on_back,
+        self.btn_back = Button(295, 470, 120, 40, "Back", self.on_back, self.app,
                                bg_color=(100, 149, 237), text_color=(255, 255, 255))
 
         print("[DEBUG] SelectLevelPopup created")

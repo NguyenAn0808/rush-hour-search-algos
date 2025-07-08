@@ -9,7 +9,7 @@ class InstructionScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.message = "Welcome to Rush Hour!\nGoal: Move the RED car to the exit.\nCars can move along their horizontal or vertical axes.\nChoose 1 of 4 algorithms for the machine to solve:\n- BFS: Breadth-First Search\n- IDS: Iterative Deepening Search\n- UCS: Uniform Cost Search\n- A*: A* search with heuristic\nDesign your own map with Custom mode!\nClick to place the car. Select length, direction, location.\nUse the Pause / Reset / Back buttons while playing."
-        self.button_back = Button(20, 600, 100, 40, "Back", self.on_back)
+        self.button_back = Button(20, 600, 100, 40, "Back", self.on_back, self.app)
         self.font = pygame.font.SysFont("Arial", 22)
 
     def render(self):

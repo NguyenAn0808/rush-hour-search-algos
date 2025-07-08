@@ -1,11 +1,12 @@
 import pygame
 
 class IconButton:
-    def __init__(self, x, y, icon_path, on_click, size=36):
+    def __init__(self, x, y, icon_path, on_click, size=36, app=None):
         self.image = pygame.image.load(icon_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (size, size))
         self.rect = self.image.get_rect(topleft=(x, y))
         self.on_click = on_click
+        self.app = app
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)

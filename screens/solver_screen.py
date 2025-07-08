@@ -36,13 +36,13 @@ class SolverScreen(Screen):
         self.goal_anim_delay = 0.3  # seconds between frames
 
 
-        self.btn_bfs = Button(40, 580, 100, 40, "BFS", lambda: self.solve(BFS))
-        self.btn_ids = Button(170, 580, 100, 40, "IDS", lambda: self.solve(IDS))
-        self.btn_ucs = Button(300, 580, 100, 40, "UCS", lambda: self.solve(UCS))
-        self.btn_astar = Button(430, 580, 100, 40, "A*", lambda: self.solve(AStar))
-        self.button_back = Button(580, 30, 100, 40, "Back", self.on_back)
-        self.button_pause = Button(580, 80, 100, 40, "Pause", self.on_pause)
-        self.button_reset = Button(580, 130, 100, 40, "Reset", self.on_reset)
+        self.btn_bfs = Button(40, 580, 100, 40, "BFS", lambda: self.solve(BFS), self.app)
+        self.btn_ids = Button(170, 580, 100, 40, "IDS", lambda: self.solve(IDS), self.app)
+        self.btn_ucs = Button(300, 580, 100, 40, "UCS", lambda: self.solve(UCS), self.app)
+        self.btn_astar = Button(430, 580, 100, 40, "A*", lambda: self.solve(AStar), self.app)
+        self.button_back = Button(580, 30, 100, 40, "Back", self.on_back, self.app)
+        self.button_pause = Button(580, 80, 100, 40, "Pause", self.on_pause, self.app)
+        self.button_reset = Button(580, 130, 100, 40, "Reset", self.on_reset, self.app)
         self.font = pygame.font.SysFont("Arial", 20)
 
     def render(self):

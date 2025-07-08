@@ -18,8 +18,8 @@ class SelectMapPopup:
         self.message = "Chọn kiểu bản đồ"
         self.font = pygame.font.SysFont("Arial", 22)
 
-        self.btn_custom = Button(250, 300, 200, 50, "Custom", self.on_custom)
-        self.btn_default = Button(250, 370, 200, 50, "Default", self.on_default)
+        self.btn_custom = Button(250, 300, 200, 50, "Custom", self.on_custom, self.app)
+        self.btn_default = Button(250, 370, 200, 50, "Default", self.on_default, self.app)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (220, 240, 250), (200, 250, 320, 200), border_radius=10)

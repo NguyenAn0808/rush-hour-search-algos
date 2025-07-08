@@ -7,11 +7,11 @@ class MenuScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.buttons = [
-            Button(260, 200, 200, 50, "Play", self.on_play),
-            Button(260, 280, 200, 50, "Instructions", self.on_instructions),
-            Button(260, 360, 200, 50, "Credits", self.on_credits),
-            Button(260, 440, 200, 50, "Quit", self.on_quit),
-            IconButton(650, 20, "assets/settings.png", self.on_settings, 64)
+            Button(260, 200, 200, 50, "Play", self.on_play, self.app),
+            Button(260, 280, 200, 50, "Instructions", self.on_instructions, self.app),
+            Button(260, 360, 200, 50, "Credits", self.on_credits, self.app),
+            Button(260, 440, 200, 50, "Quit", self.on_quit, self.app),
+            IconButton(650, 20, "assets/settings.png", self.on_settings, 64, self.app)
         ]
         self.background_img = pygame.image.load("assets/menu_bg.jpg").convert()
         self.title_font = pygame.font.SysFont("Arial", 48, bold=True)
