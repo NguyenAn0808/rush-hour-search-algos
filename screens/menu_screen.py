@@ -11,7 +11,7 @@ class MenuScreen(Screen):
             Button(260, 280, 200, 50, "Instructions", self.on_instructions),
             Button(260, 360, 200, 50, "Credits", self.on_credits),
             Button(260, 440, 200, 50, "Quit", self.on_quit),
-            IconButton(600, 50, "assets/settings.png", self.on_settings, 36)
+            IconButton(650, 20, "assets/settings.png", self.on_settings, 64)
         ]
         self.background_img = pygame.image.load("assets/menu_bg.jpg").convert()
         self.title_font = pygame.font.SysFont("Arial", 48, bold=True)

@@ -86,7 +86,7 @@ class SelectLevelPopup:
         from screens.preview_screen import PreviewLevelScreen
         node = load_map_level(level)
         level_name = f"Level {level}"
-        self.app.switch_screen(PreviewLevelScreen(self.app, node, level_name))
+        self.app.switch_screen(PreviewLevelScreen(self.app, node, self, level_name))
 
     def on_back(self):
         self.parent.popups.remove(self)

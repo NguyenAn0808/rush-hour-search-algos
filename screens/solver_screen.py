@@ -29,16 +29,19 @@ class SolverScreen(Screen):
         self.step_delay = 0.7  # seconds between steps
         self.victory_popup_shown = False
         self.animation_done = False
+        self.animate_goal = False
+        self.goal_anim_step = 0
+        self.goal_anim_timer = 0
+        self.goal_anim_delay = 0.3  # seconds between frames
 
 
-
-        self.btn_bfs = Button(580, 10, 100, 40, "BFS", lambda: self.solve(BFS))
-        self.btn_ids = Button(580, 60, 100, 40, "IDS", lambda: self.solve(IDS))
-        self.btn_ucs = Button(580, 110, 100, 40, "UCS", lambda: self.solve(UCS))
-        self.btn_astar = Button(580, 160, 100, 40, "A*", lambda: self.solve(AStar))
-        self.button_back = Button(30, 580, 100, 40, "Back", self.on_back)
-        self.button_pause = Button(150, 580, 100, 40, "Pause", self.on_pause)
-        self.button_reset = Button(270, 580, 100, 40, "Reset", self.on_reset)
+        self.btn_bfs = Button(40, 580, 100, 40, "BFS", lambda: self.solve(BFS))
+        self.btn_ids = Button(170, 580, 100, 40, "IDS", lambda: self.solve(IDS))
+        self.btn_ucs = Button(300, 580, 100, 40, "UCS", lambda: self.solve(UCS))
+        self.btn_astar = Button(430, 580, 100, 40, "A*", lambda: self.solve(AStar))
+        self.button_back = Button(580, 30, 100, 40, "Back", self.on_back)
+        self.button_pause = Button(580, 80, 100, 40, "Pause", self.on_pause)
+        self.button_reset = Button(580, 130, 100, 40, "Reset", self.on_reset)
         self.font = pygame.font.SysFont("Arial", 20)
 
     def render(self):
@@ -54,17 +57,27 @@ class SolverScreen(Screen):
                 self.timer = time.time()
                 if self.step < len(self.solution_path) - 1:
                     self.step += 1
-                else:
-                    self.state = 'finished'
-                    self.animation_done = True
-                    
+                elif self.step == len(self.solution_path) - 1:
+                    self.state = 'goal_animating'
+                    self.goal_animation_start = time.time()
+                    self.goal_animation_duration = 1  # 1 second
+                    self.step = len(self.solution_path) - 1
 
-        # Draw the current board state
-        current_node = self.solution_path[self.step] if self.solution_path else self.node
-        self.draw_board(current_node)
+        if self.state == 'goal_animating':
+            current_node = self.solution_path[-1]
+            self.draw_board_with_goal_animation(current_node)
 
-        # Draw step and cost info under the board
+            if time.time() - self.goal_animation_start >= self.goal_animation_duration:
+                 self.state = 'finished'
+                 self.animation_done = True
+
+        else:
+            current_node = self.solution_path[self.step] if self.solution_path else self.node
+            self.draw_board(current_node)
+
+        # Step count and Total cost
         self.draw_step_info(current_node)
+
 
         # Draw control buttons
         for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
@@ -72,9 +85,8 @@ class SolverScreen(Screen):
 
         # Draw final stats 
         if self.state == 'finished' and self.stats:
-            self.draw_stats()
+            # self.draw_stats()
             if self.state == 'finished' and self.stats:
-                self.draw_stats()
 
                 # Chỉ hiện popup nếu animation_done là True
                 if self.animation_done and not self.victory_popup_shown:
@@ -138,6 +150,27 @@ class SolverScreen(Screen):
                         color = self.car_colors[val]
 
                     pygame.draw.rect(self.app.screen, color, rect)
+
+    def draw_board_with_goal_animation(self, node):
+        board = node.state
+        red_car_offset = int((time.time() - self.goal_animation_start) * CELL_SIZE)  # move smoothly
+
+        for i in range(2, 8):
+            for j in range(2, 8):
+                val = board[i][j]
+                rect = pygame.Rect(MARGIN + (j - 2) * CELL_SIZE, MARGIN + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(self.app.screen, (220, 220, 220), rect, 1)
+
+                if val != '-':
+                    if val == 'G':
+                        # animate red car movement to the right
+                        rect.x += red_car_offset
+                        pygame.draw.rect(self.app.screen, (255, 100, 100), rect)
+                    else:
+                        color = self.car_colors.get(val, (100, 150, 250))
+                        pygame.draw.rect(self.app.screen, color, rect)
+
+
 
     def draw_background(self):
         # Desert background with decorative elements
@@ -219,16 +252,15 @@ class SolverScreen(Screen):
 
 
     def draw_step_info(self, current_node):
-        font = pygame.font.SysFont("Arial", 20)
+        font = pygame.font.SysFont("Arial", 22)
         step_text = f"Step: {self.step}/{len(self.solution_path)-1 if self.solution_path else 0}"
         cost_text = f"Total Cost: {current_node.cost}"
 
         step_surface = font.render(step_text, True, (0, 0, 0))
         cost_surface = font.render(cost_text, True, (0, 0, 0))
 
-        board_bottom_y = MARGIN + GRID_SIZE * CELL_SIZE + 10
-        self.app.screen.blit(step_surface, (MARGIN, board_bottom_y))
-        self.app.screen.blit(cost_surface, (MARGIN + 200, board_bottom_y))
+        self.app.screen.blit(step_surface, (580, 430))
+        self.app.screen.blit(cost_surface, (580, 450))
 
     def draw_cactus(self, x, y):
         # Main stem

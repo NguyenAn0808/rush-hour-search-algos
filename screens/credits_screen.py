@@ -6,31 +6,47 @@ class CreditsScreen(Screen):
     def __init__(self, app):
         super().__init__(app)
         self.font_title = pygame.font.SysFont("Arial", 30, bold=True)
-        self.font_body = pygame.font.SysFont("Arial", 20)
+        self.font_body = pygame.font.SysFont("Segoe UI", 20)
         self.btn_back = Button(280, 560, 160, 40, "Back", self.on_back)
 
     def render(self):
         self.draw_background()
+        screen_width = self.app.screen.get_width()
+        
+        # Draw title
+        title_font = pygame.font.SysFont("Segoe UI", 28, bold=True)
+        title_text = title_font.render("Credits", True, (0, 0, 0))
+        title_rect = title_text.get_rect(center=(screen_width // 2, 40))
+        self.app.screen.blit(title_text, title_rect)
 
-        title = self.font_title.render("Credits", True, (0, 0, 0))
-        self.app.screen.blit(title, (self.app.screen.get_width() // 2 - title.get_width() // 2, 20))
+        # White box background
+        box_width, box_height = 500, 260
+        box_x = (screen_width - box_width) // 2
+        box_y = 90
+        pygame.draw.rect(self.app.screen, (255, 255, 255), (box_x, box_y, box_width, box_height), border_radius=16)
 
-        lines = [
-            "Rush Hour",
-            "",
-            "Developed by:",
-            "23127102 - Lê Quang Phúc ",
+        # Draw game name
+        name_font = pygame.font.SysFont("Segoe UI", 24)
+        rush_hour_text = name_font.render("Rush Hour", True, (0, 0, 0))
+        self.app.screen.blit(rush_hour_text, rush_hour_text.get_rect(center=(screen_width // 2, box_y + 30)))
+
+        # Developer label
+        dev_font = pygame.font.SysFont("Segoe UI", 20)
+        dev_label = dev_font.render("Developed by:", True, (0, 0, 0))
+        self.app.screen.blit(dev_label, dev_label.get_rect(center=(screen_width // 2, box_y + 70)))
+
+        # Developer names (centered inside the box)
+        devs = [
+            "23127102 - Lê Quang Phúc",
             "23127148 - Ân Tiến Nguyên An",
             "23127307 - Nguyễn Phạm Minh Thư",
-            "23127442 - Trầm Hữu Nhân",
+            "23127442 - Trầm Hữu Nhân"
         ]
-
-        y = 80
-        for line in lines:
-            text = self.font_body.render(line, True, (30, 30, 30))
-            self.app.screen.blit(text, (40, y))
-            y += 28
-
+        y = box_y + 110
+        for dev in devs:
+            dev_text = dev_font.render(dev, True, (0, 0, 0))
+            self.app.screen.blit(dev_text, dev_text.get_rect(center=(screen_width // 2, y)))
+            y += 30
         self.btn_back.draw(self.app.screen)
 
     def handle_input(self):
