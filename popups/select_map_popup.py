@@ -1,7 +1,8 @@
 import os
-from utils import read_map, store_car
+#from main import utils
+#from utils import read_map, store_car
 from model.node import Node
-import numpy as np
+#import numpy as np
 from model.car import Car
 import pygame
 from ui.button import Button
@@ -21,7 +22,7 @@ class SelectMapPopup:
         self.btn_default = Button(250, 370, 200, 50, "Default", self.on_default)
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (240, 240, 240), (200, 250, 320, 200), border_radius=10)
+        pygame.draw.rect(screen, (220, 240, 250), (200, 250, 320, 200), border_radius=10)
         text = self.font.render(self.message, True, (0, 0, 0))
         screen.blit(text, (270, 260))
         self.btn_custom.draw(screen)

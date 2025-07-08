@@ -41,9 +41,11 @@ class MenuScreen(Screen):
                     popup.handle_input(event)
 
     def on_play(self):
-        # from popups.select_map_popup import SelectMapPopup
-        from popups.select_level_popup import SelectLevelPopup
-        self.popups.append(SelectLevelPopup(self.app, self))
+        from popups.select_map_popup import SelectMapPopup
+        self.popups.append(SelectMapPopup(self.app, self))
+
+        #from popups.select_level_popup import SelectLevelPopup
+        #self.popups.append(SelectLevelPopup(self.app, self))
        
 
     def on_settings(self):

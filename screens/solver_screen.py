@@ -3,6 +3,7 @@ import pygame
 from screens.screen import Screen
 from ui.button import Button
 from solution import BFS, IDS, UCS, AStar
+from popups.victory_popup import VictoryPopup
 
 CELL_SIZE = 80
 GRID_SIZE = 6
@@ -12,9 +13,9 @@ MARGIN = 60
 DESERT_SAND = (210, 180, 140)
 GRID_BORDER = (70, 130, 180)
 GRID_BACKGROUND = (176, 196, 222)
-EXIT_ARROW = (255, 255, 255)
+EXIT_ARROW = (255, 255, 255) 
 
-class SolverScreen(Screen):
+class SolverScreen(Screen): 
     def __init__(self, app, initial_node, level_number=""):
         super().__init__(app)
         self.node = initial_node
@@ -26,6 +27,10 @@ class SolverScreen(Screen):
         self.stats = None
         self.timer = 0
         self.step_delay = 0.7  # seconds between steps
+        self.victory_popup_shown = False
+        self.animation_done = False
+
+
 
         self.btn_bfs = Button(580, 10, 100, 40, "BFS", lambda: self.solve(BFS))
         self.btn_ids = Button(580, 60, 100, 40, "IDS", lambda: self.solve(IDS))
@@ -51,6 +56,8 @@ class SolverScreen(Screen):
                     self.step += 1
                 else:
                     self.state = 'finished'
+                    self.animation_done = True
+                    
 
         # Draw the current board state
         current_node = self.solution_path[self.step] if self.solution_path else self.node
@@ -63,9 +70,23 @@ class SolverScreen(Screen):
         for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
             btn.draw(self.app.screen)
 
-        # Draw final stats
+        # Draw final stats 
         if self.state == 'finished' and self.stats:
             self.draw_stats()
+            if self.state == 'finished' and self.stats:
+                self.draw_stats()
+
+                # Chỉ hiện popup nếu animation_done là True
+                if self.animation_done and not self.victory_popup_shown:
+                    popup = VictoryPopup(self.app, self)
+                    self.popups.append(popup)
+                    self.victory_popup_shown = True
+
+        # Luôn vẽ các popup
+        for popup in self.popups:
+            if popup.visible:
+                popup.draw()
+    
 
     def handle_input(self):
         for event in pygame.event.get():
@@ -76,6 +97,9 @@ class SolverScreen(Screen):
                 for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
+            for popup in self.popups:
+                if popup.visible:
+                    popup.handle_event(event)
 
     def draw_board(self, node):
         board = node.state
@@ -229,6 +253,7 @@ class SolverScreen(Screen):
         pygame.draw.rect(self.app.screen, (255, 255, 255), (x + 3, y + 10, 8, 4))  # stripe
 
     def solve(self, solver_class):
+        self.victory_popup_shown = False
         solver = solver_class(self.node)
 
         start = time.time()
@@ -241,6 +266,7 @@ class SolverScreen(Screen):
             self.timer = time.time()
             self.state = 'solving'
 
+
             # Collect stats from the solver instance
             self.stats = {
                 "Steps": solver.step_count,
@@ -250,6 +276,7 @@ class SolverScreen(Screen):
                 "Cost": solver.total_cost
             }
             print("Found solution!")
+
         else:
             self.state = 'finished'
             self.stats = {"Message": "No solution found"}
@@ -275,6 +302,10 @@ class SolverScreen(Screen):
         self.solution_path = []
         self.stats = None
         self.button_pause.label = "Pause"
+        self.popups.clear()
+        self.victory_popup_shown = False
+        self.animation_done = False  # reset lại trạng thái animation
+
 
     def draw_stats(self):
         font = pygame.font.SysFont("Arial", 18)
@@ -284,3 +315,4 @@ class SolverScreen(Screen):
             text = font.render(f"{key}: {val}", True, (0, 0, 0))
             self.app.screen.blit(text, (600, y))
             y += 25
+        
