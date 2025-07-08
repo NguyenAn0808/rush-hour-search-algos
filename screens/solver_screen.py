@@ -4,6 +4,7 @@ from screens.screen import Screen
 from ui.button import Button
 from solution import BFS, IDS, UCS, AStar
 from popups.victory_popup import VictoryPopup
+from popups.nosolution_popup import NoSolutionPopup
 
 CELL_SIZE = 80
 GRID_SIZE = 6
@@ -281,6 +282,10 @@ class SolverScreen(Screen):
             self.state = 'finished'
             self.stats = {"Message": "No solution found"}
             print("No solution.")
+            
+             # Hiển thị popup khi không có lời giải
+            popup = NoSolutionPopup(self.app, self)
+            self.popups.append(popup)
 
     
     def on_back(self):
