@@ -2,18 +2,19 @@ import pygame
 from screens.screen import Screen
 from ui.button import Button
 from screens.solver_screen import SolverScreen
+from screens.menu_screen import MenuScreen
 
 class PreviewLevelScreen(Screen):
-    def __init__(self, app, node, level_name="Preview"):
+    def __init__(self, app, node, parent_screen, level_name="Preview"):
         super().__init__(app)
         self.node = node
         self.level_name = level_name
-
+        self.parent = parent_screen
         self.font = pygame.font.SysFont("Arial", 26, bold=True)
         self.sub_font = pygame.font.SysFont("Arial", 18)
 
-        self.button_start = Button(250, 540, 100, 40, "Start", self.on_start)
-        self.button_back = Button(370, 540, 100, 40, "Back", self.on_back)
+        self.button_start = Button(220, 570, 100, 40, "Start", self.on_start)
+        self.button_back = Button(420, 570, 100, 40, "Back", self.on_back)
 
         print(f"[DEBUG] Preview screen loaded for {level_name}")
 
@@ -46,6 +47,6 @@ class PreviewLevelScreen(Screen):
         self.app.switch_screen(SolverScreen(self.app, self.node, self.level_name))
 
     def on_back(self):
-        from popups.select_level_popup import SelectLevelPopup
-        self.parent.popups.append(SelectLevelPopup(self.app, self.parent))
-        self.app.switch_screen(self.parent)  # go back to previous
+    
+        self.app.switch_screen(MenuScreen(self.app))
+        

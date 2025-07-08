@@ -17,3 +17,8 @@ class Button:
 
     def is_clicked(self, pos):
         return self.rect.collidepoint(pos)
+    
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.is_clicked(event.pos):
+            self.on_click()
+
