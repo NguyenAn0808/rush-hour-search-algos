@@ -9,7 +9,7 @@ class MenuScreen(Screen):
         self.buttons = [
             Button(260, 200, 200, 50, "Play", self.on_play),
             Button(260, 280, 200, 50, "Instructions", self.on_instructions),
-            # Button(260, 360, 200, 50, "Credits", self.on_credits),
+            Button(260, 360, 200, 50, "Credits", self.on_credits),
             Button(260, 440, 200, 50, "Quit", self.on_quit),
             IconButton(600, 50, "assets/settings.png", self.on_settings, 36)
         ]
@@ -34,11 +34,13 @@ class MenuScreen(Screen):
             if event.type == pygame.QUIT:
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                for button in self.buttons:
-                    if button.is_clicked(event.pos):
-                        button.on_click()
-                for popup in self.popups:
-                    popup.handle_input(event)
+                # Let popups handle input first
+                if self.popups:
+                    self.popups[-1].handle_input(event)
+                else:
+                    for button in self.buttons:
+                        if button.is_clicked(event.pos):
+                            button.on_click()
 
     def on_play(self):
         # from popups.select_map_popup import SelectMapPopup
@@ -54,6 +56,10 @@ class MenuScreen(Screen):
         from screens.instruction_screen import InstructionScreen
         self.app.switch_screen(InstructionScreen(self.app))
 
+    def on_credits(self):
+        from screens.credits_screen import CreditsScreen
+        self.app.switch_screen(CreditsScreen(self.app))
+        
     def on_quit(self):
         pygame.quit()
         exit()

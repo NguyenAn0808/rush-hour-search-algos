@@ -1,6 +1,7 @@
 import pygame
 from ui.button import Button
 from ui.icon_button import IconButton
+from screens.menu_screen import MenuScreen
 
 class SettingsPopup:
     def __init__(self, app, parent_screen):
@@ -25,7 +26,7 @@ class SettingsPopup:
         screen.blit(title_text, (290, 185))
 
         # Volume Control
-        vol_label = self.small_font.render(f"🔊 Volume: {self.volume}", True, (0, 0, 0))
+        vol_label = self.small_font.render(f"Volume: {self.volume}", True, (0, 0, 0))
         screen.blit(vol_label, (240, 190 + 40))
 
         self.btn_close.draw(screen)
@@ -37,5 +38,5 @@ class SettingsPopup:
                     btn.on_click()
 
     def on_close(self):
-        if self in self.parent.popups:
+        if hasattr(self.parent, "popups") and self in self.parent.popups:
             self.parent.popups.remove(self)
