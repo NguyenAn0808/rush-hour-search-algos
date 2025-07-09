@@ -22,14 +22,15 @@ class IDS(Solution):
         while len(Stack) != 0:
             # Expand node
             current_node, depth = Stack.popleft()
+
+            if depth >= depth_limit:
+                continue
+
             self.number_expanded_nodes += 1
 
             if current_node.is_goal():
                 return current_node
             
-            if depth >= depth_limit:
-                continue
-
             for new_node in self.get_successors(current_node):   
                 if new_node not in visited:          
                     new_node.parent = current_node
@@ -43,12 +44,11 @@ class IDS(Solution):
         for depth_limit in range(MAX_DEPTH + 1):
             current_state = self.dls(self.initial_node, depth_limit)
             if current_state:
-                print(depth_limit)
+                # print(depth_limit)
                 return current_state
             
         return None
 
     def print_informations(self, goal_node: Node):
-        self.number_expanded_nodes -= 1
         self.total_cost = self.step_count
         return super().print_informations(goal_node)

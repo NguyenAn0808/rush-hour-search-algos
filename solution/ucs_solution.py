@@ -28,7 +28,7 @@ class UCS(Solution):
                 continue
             
             self.number_expanded_nodes += 1
-
+            
             if current_node.is_goal():
                 self.total_cost = current_node.cost
                 
