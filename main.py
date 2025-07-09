@@ -1,4 +1,3 @@
-"""
 from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
@@ -88,7 +87,7 @@ def main():
 
     # "X": outside play area, "-": possible position, "alphabet": car/truck 
     # map: save as matrix
-    map = read_map("Map/9.txt")
+    map = read_map("Map/13.txt")
 
     # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
     all_cars = store_car(map)
@@ -111,7 +110,7 @@ def main():
 
 if __name__ == "__main__":
   main()
-"""
+
 
 # from game_app.game_app import GameApp
 
