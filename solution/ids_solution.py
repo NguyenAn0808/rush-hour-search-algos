@@ -13,9 +13,6 @@ class IDS(Solution):
     
     def calculate_heuristic(self, current_node: Node):
         return 0
-
-    def get_successors(self, current_node):
-        return super().get_successors(current_node)
     
     def dls(self, start_node: Node, depth_limit) -> Node:
         # Push dô stack
@@ -53,7 +50,5 @@ class IDS(Solution):
 
     def print_informations(self, goal_node: Node):
         self.number_expanded_nodes -= 1
+        self.total_cost = self.step_count
         return super().print_informations(goal_node)
-
-    def find_path(self, goal_node: Node) -> list:
-        return super().find_path(goal_node)

@@ -27,7 +27,6 @@ class Solution(ABC):
     def calculate_heuristic(self, current_node: Node):
         pass
 
-    @abstractmethod
     def get_successors(self, current_node: Node) -> list[Node]:
         successors = []
         for temp_cars, action, new_car in current_node.get_next_possible_moves():
@@ -45,7 +44,7 @@ class Solution(ABC):
         Abstract method to solve the problem and return the goal node.
         """
         pass
-
+    
     @abstractmethod
     def print_informations(self, goal_node: Node):
         print(f"Number of Expanded Nodes: {self.number_expanded_nodes}")
@@ -54,7 +53,6 @@ class Solution(ABC):
         print(f"Total Cost: {self.total_cost}")
         print(f"Step count:  {self.step_count}")
 
-    @abstractmethod
     def find_path(self, goal_node: Node) -> list:
         path = []
 

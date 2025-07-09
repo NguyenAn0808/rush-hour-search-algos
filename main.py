@@ -1,4 +1,5 @@
-"""from solution import AStar, UCS, BFS, IDS
+"""
+from solution import AStar, UCS, BFS, IDS
 from model import Car, Node
 from collections import defaultdict
 
@@ -87,18 +88,18 @@ def main():
 
     # "X": outside play area, "-": possible position, "alphabet": car/truck 
     # map: save as matrix
-    map = read_map("Map/11.txt")
+    map = read_map("Map/9.txt")
 
     # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
     all_cars = store_car(map)
     
     A = Node(cars=all_cars)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = UCS(A)
+    solution = BFS(A)
 
     # goal_node = goal state            
     goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
-    
+    print(solution.initial_node.heuristic)
     # path: list of states in solution path 
     path = solution.find_path(goal_node)
 
@@ -111,8 +112,9 @@ def main():
 if __name__ == "__main__":
   main()
 """
-from game_app.game_app import GameApp
 
-if __name__ == "__main__":
-      app = GameApp()
-      app.run()
+# from game_app.game_app import GameApp
+
+# if __name__ == "__main__":
+#       app = GameApp()
+#       app.run()

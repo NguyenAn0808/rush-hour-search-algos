@@ -12,9 +12,6 @@ class UCS(Solution):
 
     def calculate_heuristic(self, current_node: Node):
         return 0
-
-    def get_successors(self, current_node):
-        return super().get_successors(current_node)
     
     def solve(self) -> Node:
         frontier = []
@@ -47,6 +44,3 @@ class UCS(Solution):
     
     def print_informations(self, goal_node: Node):
         return super().print_informations(goal_node)
-
-    def find_path(self, goal_node: Node) -> list:
-        return super().find_path(goal_node)
