@@ -10,6 +10,8 @@ def calculate_minimum_unique_cars(dir: str, blocker: Car, visited: set[str],
 
     row, col = blocker.row, blocker.col
 
+    secondary_blockers = set()
+
     res = 0
     for i in range(1, space + 1):
         # Move to clear the way 
@@ -25,15 +27,11 @@ def calculate_minimum_unique_cars(dir: str, blocker: Car, visited: set[str],
 
         new_cell = (new_row, new_col)
         
-        if new_cell not in cell_of_cars:
-            continue
+        if new_cell in cell_of_cars:
+            secondary_blocker = cell_of_cars[new_cell]
+            secondary_blockers.add(secondary_blocker.id)
         
-        new_blocker = cell_of_cars[new_cell]
-        
-        # print(f"To move {blocker.id}, we must first move {new_blocker.id}")
-        res += 1
-    
-    return res
+    return len(secondary_blockers)
 
 def evaluate_advanced_heuristic(cars: list[Car]) -> int: 
     """

@@ -15,7 +15,7 @@ class AStar(Solution):
         return parent_cost + new_cost
 
     def calculate_heuristic(self, current_node: Node):
-        return evaluate_advanced_heuristic(current_node.cars)
+        return evaluate_recursion_heuristic(current_node.cars)
     
     def solve(self) -> Node:
         priority_queue = [] 
