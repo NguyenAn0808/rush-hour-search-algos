@@ -4,6 +4,8 @@ from ui.button import Button
 from screens.solver_screen import SolverScreen
 from screens.menu_screen import MenuScreen
 
+DESERT_SAND = (210, 180, 140)
+
 class PreviewLevelScreen(Screen):
     def __init__(self, app, node, parent_screen, level_name="Preview"):
         super().__init__(app)
@@ -18,7 +20,7 @@ class PreviewLevelScreen(Screen):
 
 
     def render(self):
-        self.app.screen.fill((245, 235, 215))
+        self.app.screen.fill(DESERT_SAND)
 
         # Draw title
         title_text = self.font.render(f"Preview: {self.level_name}", True, (0, 0, 0))

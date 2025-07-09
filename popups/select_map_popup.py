@@ -15,7 +15,7 @@ class SelectMapPopup:
     def __init__(self, app, parent_screen):
         self.app = app
         self.parent = parent_screen
-        self.message = "Chọn kiểu bản đồ"
+        self.message = "Select a map"
         self.font = pygame.font.SysFont("Arial", 22)
 
         self.btn_custom = Button(250, 300, 200, 50, "Custom", self.on_custom, self.app)

@@ -11,17 +11,17 @@ class MenuScreen(Screen):
             Button(260, 280, 200, 50, "Instructions", self.on_instructions, self.app),
             Button(260, 360, 200, 50, "Credits", self.on_credits, self.app),
             Button(260, 440, 200, 50, "Quit", self.on_quit, self.app),
-            IconButton(650, 20, "assets/settings.png", self.on_settings, 64, self.app)
+            IconButton(650, 10, "assets/settings.png", self.on_settings, 64, self.app)
         ]
         self.background_img = pygame.image.load("assets/menu_bg.jpg").convert()
-        self.title_font = pygame.font.SysFont("Arial", 48, bold=True)
+        self.title_font = pygame.font.SysFont("Arial", 90, bold=True)
         self.popups = []
 
     def render(self):
         # Draw background
         self.app.screen.blit(self.background_img, (0, 0))
-        title_surface = self.title_font.render("RUSH HOUR", True, (255, 255, 255))
-        title_rect = title_surface.get_rect(center=(360, 170))
+        title_surface = self.title_font.render("RUSH HOUR", True, (216, 40, 11))
+        title_rect = title_surface.get_rect(center=(360, 120))
         self.app.screen.blit(title_surface, title_rect)
         
         for button in self.buttons:

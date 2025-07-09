@@ -55,11 +55,12 @@ class SelectLevelPopup:
 
     def draw(self, screen):
         # Popup frame
-        pygame.draw.rect(screen, (220, 240, 250), (150, 240, 420, 240), border_radius=10)
+        pygame.draw.rect(screen, (220, 240, 250), (150, 240, 420, 290), border_radius=10)
 
         # Title
         text = self.font.render(self.message, True, (0, 0, 0))
-        screen.blit(text, (260, 250))
+        text_rect = text.get_rect(center=(360, 260))
+        screen.blit(text, text_rect)
 
         # EASY / MEDIUM / HARD
         for label in self.labels:

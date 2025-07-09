@@ -46,9 +46,9 @@ class VictoryPopup:
             f"Cost: {stats.get('Cost', 'N/A')}",
         ]
 
-        for i, line in enumerate(lines):
-            text = self.text_font.render(line, True, (0, 0, 0))
-            self.surface.blit(text, (40, 90 + i * 30))
+        # for i, line in enumerate(lines):
+        #    text = self.text_font.render(line, True, (0, 0, 0))
+        #    self.surface.blit(text, (40, 90 + i * 30))
 
         # Draw (X) close button
         pygame.draw.rect(self.surface, (200, 50, 50), self.close_button_rect.move(-self.rect.left, -self.rect.top), border_radius=8)

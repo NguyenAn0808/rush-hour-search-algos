@@ -43,7 +43,7 @@ class SolverScreen(Screen):
         self.button_back = Button(580, 30, 100, 40, "Back", self.on_back, self.app)
         self.button_pause = Button(580, 80, 100, 40, "Pause", self.on_pause, self.app)
         self.button_reset = Button(580, 130, 100, 40, "Reset", self.on_reset, self.app)
-        self.font = pygame.font.SysFont("Arial", 20)
+        self.font = pygame.font.SysFont("Arial", 20, bold=True)
 
     def render(self):
         self.draw_background()
@@ -260,6 +260,20 @@ class SolverScreen(Screen):
         step_surface = font.render(step_text, True, (0, 0, 0))
         cost_surface = font.render(cost_text, True, (0, 0, 0))
 
+        # Calculate background rectangle dimensions
+        max_width = max(step_surface.get_width(), cost_surface.get_width())
+        total_height = step_surface.get_height() + cost_surface.get_height() + 10  # 10px spacing
+        
+        # Add padding
+        padding = 15
+        rect_width = max_width + (padding * 2)
+        rect_height = total_height + (padding * 2)
+        
+        # Background 
+        pygame.draw.rect(self.app.screen, (240, 248, 255), 
+                        (570, 420, rect_width, rect_height), border_radius=10)
+        
+        # Draw text on top of background
         self.app.screen.blit(step_surface, (580, 430))
         self.app.screen.blit(cost_surface, (580, 450))
 
