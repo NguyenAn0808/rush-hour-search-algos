@@ -87,14 +87,14 @@ def main():
 
     # "X": outside play area, "-": possible position, "alphabet": car/truck 
     # map: save as matrix
-    map = read_map("tests/test_map.txt")
+    map = read_map("Map/12.txt")
 
     # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
     all_cars = store_car(map)
     
     A = Node(cars=all_cars)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = UCS(A)
+    solution = AStar(A)
 
     # goal_node = goal state            
     goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
