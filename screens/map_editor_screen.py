@@ -32,6 +32,8 @@ class MapEditorScreen(Screen):
 
         self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
         self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
+        self.back_button = Button(30, 500, 100, 40, "Back", self.go_back, self.app)
+
         self.font = pygame.font.SysFont("Arial", 18)
 
         self.color_buttons = []
@@ -96,6 +98,7 @@ class MapEditorScreen(Screen):
         self.length_button.draw(self.app.screen)
         self.ok_button.draw(self.app.screen)
         self.solve_button.draw(self.app.screen)
+        self.back_button.draw(self.app.screen)
 
         lines = self.instructions.split('\n')
         for i, line in enumerate(lines):
@@ -126,12 +129,16 @@ class MapEditorScreen(Screen):
                 if 0 <= row < GRID_SIZE and 0 <= col < GRID_SIZE:
                     self.selected_cell = (row, col)
 
-                # Chỉ chặn nút OK khi popup còn chạy
                 if self.ok_button.is_clicked(event.pos):
                     if not (self.instruction_popup and time.time() - self.instruction_timer <= self.instruction_duration):
                         self.ok_button.on_click()
 
-                for btn in self.color_buttons + [self.solve_button, self.toggle_dir_button, self.length_button]:
+                for btn in self.color_buttons + [
+                    self.solve_button,
+                    self.toggle_dir_button,
+                    self.length_button,
+                    self.back_button
+                ]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
 
@@ -220,3 +227,7 @@ class MapEditorScreen(Screen):
             return
         node = Node(self.cars)
         self.app.switch_screen(SolverScreen(self.app, node, "", car_colors=CAR_COLORS))
+
+    def go_back(self):
+        from screens.menu_screen import MenuScreen
+        self.app.switch_screen(MenuScreen(self.app))
