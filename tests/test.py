@@ -87,7 +87,7 @@ def main():
 
     # "X": outside play area, "-": possible position, "alphabet": car/truck 
     # map: save as matrix
-    map = read_map("tests/test_map.txt")
+    map = read_map("Map/6.txt")
 
     # all_cars: list of obstacle vehicles (include: id, direction, x, y, length)
     all_cars = store_car(map)
@@ -95,19 +95,19 @@ def main():
     A = Node(cars=all_cars)
     print(A)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = AStar(A)
+    solution = BFS(A)
     print(solution.calculate_heuristic(solution.initial_node))
     # goal_node = goal state            
-    # goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
+    goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
     # print(solution.initial_node.heuristic)
     # path: list of states in solution path 
-    # path = solution.find_path(goal_node)
+    path = solution.find_path(goal_node)
 
     # print number of expanded nodes, search time, memory usage, total cost, step count
-    # solution.print_informations(goal_node)
+    solution.print_informations(goal_node)
 
     # print solution path
-    # print_path(path)
+    print_path(path)
 
 if __name__ == "__main__":
  main()
