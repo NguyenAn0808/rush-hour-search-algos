@@ -6,9 +6,6 @@ from collections import deque
 class BFS(Solution):
     name = "BFS"
         
-    def calculate_cost(self, parent_cost: int, new_cost: int):
-        return 0
-    
     def calculate_heuristic(self, current_node: Node):
         return 0
     
@@ -28,6 +25,7 @@ class BFS(Solution):
             
             for new_node in self.get_successors(current_node):          # Mỗi move là 1 list Vehicles hợp lệ -> newgameboard mới tạo ra gamestate tương ứng với list đó   
                 if new_node.is_goal():
+                    self.total_cost = new_node.cost 
                     new_node.parent = current_node
                     return new_node
                 
@@ -35,8 +33,4 @@ class BFS(Solution):
                     Queue.appendleft(new_node)
                     new_node.parent = current_node
                     archive[new_node] = True           
-                    
-    def print_informations(self, goal_node: Node):
-        self.total_cost = self.step_count
-        return super().print_informations(goal_node)
 

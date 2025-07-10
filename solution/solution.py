@@ -19,9 +19,8 @@ class Solution(ABC):
         self.search_time = search_time
         self.step_count = step_count
 
-    @abstractmethod
     def calculate_cost(self, parent_cost: int = 0, new_cost: int = 0):
-        pass
+        return parent_cost + new_cost
 
     @abstractmethod
     def calculate_heuristic(self, current_node: Node):
@@ -45,7 +44,6 @@ class Solution(ABC):
         """
         pass
     
-    @abstractmethod
     def print_informations(self, goal_node: Node):
         print(f"Number of Expanded Nodes: {self.number_expanded_nodes}")
         print(f"Search Time: {self.search_time:.2f} seconds")

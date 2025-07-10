@@ -8,9 +8,6 @@ MAX_DEPTH = 100
 class IDS(Solution):
     name = "IDS"
     
-    def calculate_cost(self, parent_cost: int, new_cost: int):
-        return 0
-    
     def calculate_heuristic(self, current_node: Node):
         return 0
     
@@ -29,6 +26,7 @@ class IDS(Solution):
             self.number_expanded_nodes += 1
 
             if current_node.is_goal():
+                self.total_cost = current_node.cost
                 return current_node
             
             for new_node in self.get_successors(current_node):   
@@ -44,11 +42,6 @@ class IDS(Solution):
         for depth_limit in range(MAX_DEPTH + 1):
             current_state = self.dls(self.initial_node, depth_limit)
             if current_state:
-                # print(depth_limit)
                 return current_state
             
         return None
-
-    def print_informations(self, goal_node: Node):
-        self.total_cost = self.step_count
-        return super().print_informations(goal_node)

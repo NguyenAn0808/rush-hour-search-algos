@@ -7,9 +7,6 @@ import heapq
 class UCS(Solution):
     name = "UCS"
     
-    def calculate_cost(self, parent_cost: int, new_cost: int):
-        return parent_cost + new_cost
-
     def calculate_heuristic(self, current_node: Node):
         return 0
     
@@ -42,5 +39,3 @@ class UCS(Solution):
                     
         raise ValueError("The puzzle cannot be solved. No solution found.")
     
-    def print_informations(self, goal_node: Node):
-        return super().print_informations(goal_node)
