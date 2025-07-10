@@ -108,6 +108,18 @@ class MapEditorScreen(Screen):
         car_id = 'G' if not self.target_car_placed else self.selected_color
         dir = 'h' if not self.target_car_placed else self.current_dir
 
+        #Phúc sửa phần này để check logic cho target car
+        if not self.target_car_placed:
+            if row != 2:
+                self.instructions = "Target car must be on the third row!"
+                return
+            if dir != 'h':
+                self.instructions = "Target car must be horizontal!"
+                return
+            if size != 2:
+                self.instructions = "Target car must be length 2!"
+                return
+            
         coords = []
         try:
             if dir == 'h':
@@ -153,4 +165,4 @@ class MapEditorScreen(Screen):
             return
         node = Node(self.cars)
         print(self.cars)
-        self.app.switch_screen(SolverScreen(self.app, node))
+        self.app.switch_screen(SolverScreen(self.app, node, "", car_colors=CAR_COLORS))

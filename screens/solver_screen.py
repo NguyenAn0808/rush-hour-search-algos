@@ -17,7 +17,7 @@ GRID_BACKGROUND = (176, 196, 222)
 EXIT_ARROW = (255, 255, 255) 
 
 class SolverScreen(Screen): 
-    def __init__(self, app, initial_node, level_number=""):
+    def __init__(self, app, initial_node, level_number="", car_colors=None):
         super().__init__(app)
         self.node = initial_node
         self.level_number = level_number
@@ -33,8 +33,8 @@ class SolverScreen(Screen):
         self.animate_goal = False
         self.goal_anim_step = 0
         self.goal_anim_timer = 0
-        self.goal_anim_delay = 0.3  # seconds between frames
-
+        self.goal_anim_delay = 0.3  # s if car_colors is not None else {}econds between frames
+        self.car_colors = car_colors if car_colors is not None else {}
 
         self.btn_bfs = Button(40, 580, 100, 40, "BFS", lambda: self.solve(BFS), self.app)
         self.btn_ids = Button(170, 580, 100, 40, "IDS", lambda: self.solve(IDS), self.app)
