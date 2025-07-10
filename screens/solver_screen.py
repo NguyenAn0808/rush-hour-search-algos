@@ -113,22 +113,29 @@ class SolverScreen(Screen):
         title_text = self.title.render(f"{self.level_number}", True, (0, 0, 0))
         title_rect = title_text.get_rect(center=(self.app.screen.get_width() // 2, 20))
         self.app.screen.blit(title_text, title_rect)
-        
+
         if self.state == 'loading':
-            self.draw_background()
-            self.draw_blue_striped_border()
-            self.draw_board(self.node)
+            if self.solution_thread.is_alive():
+                self.draw_board(self.node)
+                self.spinner_angle = (self.spinner_angle + 5) % 360
+                rotated = pygame.transform.rotate(self.spinner_image, self.spinner_angle)
+                rect = rotated.get_rect(center=(self.app.screen.get_width() // 2, 300))
+                self.app.screen.blit(rotated, rect)
 
-            self.spinner_angle = (self.spinner_angle + 5) % 360
-            rotated = pygame.transform.rotate(self.spinner_image, self.spinner_angle)
-            rect = rotated.get_rect(center=(self.app.screen.get_width() // 2, 300))
-            self.app.screen.blit(rotated, rect)
+                loading_text = self.font.render("Solving...", True, (0, 0, 0))
+                text_rect = loading_text.get_rect(center=(self.app.screen.get_width() // 2, 360))
+                self.app.screen.blit(loading_text, text_rect)
+                return
+            else:
+                # Transitioned out of loading, state is now solving or finished
+                self.state = 'finished'
+                self.stats = {"Message": "No solution found"}
+                print("No solution.")
+                # Hiển thị popup khi không có lời giải
+                popup = NoSolutionPopup(self.app, self)
+                self.popups.append(popup)
 
-            loading_text = self.font.render("Solving...", True, (0, 0, 0))
-            text_rect = loading_text.get_rect(center=(self.app.screen.get_width() // 2, 360))
-            self.app.screen.blit(loading_text, text_rect)
 
-            return
         # Animate step-by-step solving
         if self.state == 'solving' and self.solution_path:
             if time.time() - self.timer > self.step_delay:
@@ -152,6 +159,7 @@ class SolverScreen(Screen):
         else:
             current_node = self.solution_path[self.step] if self.solution_path else self.node
             self.draw_board(current_node)
+       
 
         # Step count and Total cost
         self.draw_step_info(current_node)
@@ -597,7 +605,7 @@ class SolverScreen(Screen):
         
         self.solution_thread = threading.Thread(target=thread_solve)
         self.solution_thread.start()
-
+        
 
     
     def on_back(self):
