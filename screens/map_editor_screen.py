@@ -1,9 +1,9 @@
+import time
 import pygame
 from screens.screen import Screen
 from ui.button import Button
 from model import Car, Node
 from screens.solver_screen import SolverScreen
-from ui.sprites import CarSprite
 
 CELL_SIZE = 80
 GRID_SIZE = 6
@@ -25,20 +25,14 @@ class MapEditorScreen(Screen):
         self.cars = []
 
         self.target_car_placed = False
-        self.instructions = "Choose the location of target car in the third row."
+        self.instructions = "Choose the location of the target car."
         self.selected_color = 'G'
         self.current_dir = 'h'
         self.car_length = 2
-        self.car_id_to_color = {'G': (255, 100, 100),
-                                'A': (100, 150, 250),
-                                'B': (0, 200, 100),
-                                'C': (255, 200, 0),
-                                'D': (138, 43, 226),
-                                'E': (255, 105, 180),
-                            }
+
         self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
         self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
-        self.font = pygame.font.SysFont("impact", 20)
+        self.font = pygame.font.SysFont("Arial", 18)
 
         self.color_buttons = []
         self.available_colors = ['A', 'B', 'C', 'D', 'E']
@@ -50,6 +44,25 @@ class MapEditorScreen(Screen):
         self.length_button = Button(580, 360, 100, 30, "Len: 2", self.toggle_length, self.app)
 
         self.selected_cell = None
+
+        # Popup instruction
+        self.instruction_popup = None
+        self.instruction_timer = 0
+        self.instruction_duration = 2
+        self.instruction_queue = [
+            "Dir means direction: H is horizontal",
+            "V is vertical",
+            "Len means length: only 2 or 3",
+            "Click Dir or Len to change them",
+            "Place target car tail at row 3",
+            "Now pick a color and place a car"
+        ]
+        self.current_instruction_index = 0
+        self.show_instruction(self.instruction_queue[self.current_instruction_index])
+
+    def show_instruction(self, message):
+        self.instruction_popup = message
+        self.instruction_timer = time.time()
 
     def select_color(self, color_id):
         self.selected_color = color_id
@@ -68,11 +81,11 @@ class MapEditorScreen(Screen):
             for col in range(GRID_SIZE):
                 rect = pygame.Rect(MARGIN + col * CELL_SIZE, MARGIN + row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(self.app.screen, (200, 200, 200), rect, 1)
+                val = self.grid[row][col]
+                if val != '.':
+                    color = CAR_COLORS.get(val, (150, 150, 150))
+                    pygame.draw.rect(self.app.screen, color, rect)
 
-        for car in self.cars:
-            self.draw_car_sprite(self.app.screen, car)
-                
-        # Highlight selected cell
         if self.selected_cell:
             row, col = self.selected_cell
             rect = pygame.Rect(MARGIN + col * CELL_SIZE, MARGIN + row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
@@ -80,20 +93,35 @@ class MapEditorScreen(Screen):
 
         for btn in self.color_buttons:
             btn.draw(self.app.screen)
-
         self.toggle_dir_button.draw(self.app.screen)
         self.length_button.draw(self.app.screen)
         self.ok_button.draw(self.app.screen)
         self.solve_button.draw(self.app.screen)
 
-        instr = self.font.render(self.instructions, True, (0, 0, 0))
-        self.app.screen.blit(instr, (MARGIN, 560))
+        # Show main instruction
+        lines = self.instructions.split('\n')
+        for i, line in enumerate(lines):
+            text = self.font.render(line, True, (0, 0, 0))
+            self.app.screen.blit(text, (MARGIN, 540 + i * 20))
+
+        # Show popup instruction if it is in time
+        if self.instruction_popup and (time.time() - self.instruction_timer <= self.instruction_duration):
+            popup_surf = pygame.Surface((520, 40))
+            popup_surf.fill((255, 255, 180))
+            pygame.draw.rect(popup_surf, (0, 0, 0), popup_surf.get_rect(), 2)
+            text = self.font.render(self.instruction_popup, True, (0, 0, 0))
+            popup_surf.blit(text, (10, 10))
+            self.app.screen.blit(popup_surf, (30, 10))
+        elif self.instruction_popup:
+            self.instruction_popup = None
+            self.current_instruction_index += 1
+            if self.current_instruction_index < len(self.instruction_queue):
+                self.show_instruction(self.instruction_queue[self.current_instruction_index])
 
     def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 col = (x - MARGIN) // CELL_SIZE
@@ -101,13 +129,24 @@ class MapEditorScreen(Screen):
                 if 0 <= row < GRID_SIZE and 0 <= col < GRID_SIZE:
                     self.selected_cell = (row, col)
 
-                for btn in self.color_buttons + [self.ok_button, self.solve_button, self.toggle_dir_button, self.length_button]:
+                # Avoid click OK while running instruction
+                for btn in self.color_buttons + [self.solve_button, self.toggle_dir_button, self.length_button]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
 
+                if self.ok_button.is_clicked(event.pos):
+                    if not (self.instruction_popup and time.time() - self.instruction_timer <= self.instruction_duration):
+                        self.ok_button.on_click()
+
     def place_car(self):
         if not self.selected_cell:
-            self.instructions = "Choose a cell to put the car!"
+            self.show_instruction("Click a cell to place car.")
+            self.instructions = "You must click a cell first."
+            return
+
+        if self.target_car_placed and not self.selected_color:
+            self.show_instruction("Pick a color before placing.")
+            self.instructions = "Click a color button first."
             return
 
         row, col = self.selected_cell
@@ -115,92 +154,72 @@ class MapEditorScreen(Screen):
         car_id = 'G' if not self.target_car_placed else self.selected_color
         dir = 'h' if not self.target_car_placed else self.current_dir
 
-        #Phúc sửa phần này để check logic cho target car
         if not self.target_car_placed:
             if row != 2:
-                self.instructions = "Target car must be on the third row!"
+                self.show_instruction("Target car must be on row 3.")
+                self.instructions = "Place target car on row 3."
                 return
             if dir != 'h':
-                self.instructions = "Target car must be horizontal!"
+                self.show_instruction("Target car must be horizontal.")
+                self.instructions = "Direction must be H."
                 return
             if size != 2:
-                self.instructions = "Target car must be length 2!"
+                self.show_instruction("Target car must be size 2.")
+                self.instructions = "Length must be 2."
                 return
-            
+
         coords = []
         try:
             if dir == 'h':
                 for i in range(size):
                     if self.grid[row][col + i] != '.':
-                        self.instructions = "Overlapping with another car!"
+                        self.show_instruction("Car overlaps another.")
+                        self.instructions = "Choose a free position."
                         return
                     coords.append((row, col + i))
             else:
                 for i in range(size):
                     if self.grid[row + i][col] != '.':
-                        self.instructions = "Overlapping with another car!"
+                        self.show_instruction("Car overlaps another.")
+                        self.instructions = "Choose a free position."
                         return
                     coords.append((row + i, col))
         except IndexError:
-            self.instructions = "Out of bounds!"
+            self.show_instruction("Car out of bounds.")
+            self.instructions = "Too close to edge."
             return
 
         for r, c in coords:
             self.grid[r][c] = car_id
 
-        self.car_id_to_color[car_id] = CAR_COLORS.get(car_id, (150, 150, 150))
         self.cars.append(Car(id=car_id, dir=dir, row=row + 2, col=col + 2, size=size))
 
         if not self.target_car_placed:
             self.target_car_placed = True
-            self.instructions = "Select a color, direction, length, then click a cell to place a new car."
+            self.selected_color = None  # Clear color after placing target
+            self.show_instruction(self.instruction_queue[5])
+            self.instructions = "Now pick a color,\nthen place the next car."
         else:
-            # Xóa nút màu đã chọn khỏi danh sách
-            self.available_colors.remove(self.selected_color)
+            if self.selected_color in self.available_colors:
+                self.available_colors.remove(self.selected_color)
+
             self.color_buttons = [
-               Button(580, 50 + i * 50, 40, 40, '', lambda c=color_id: self.select_color(c), self.app, bg_color=CAR_COLORS[color_id])
-               for i, color_id in enumerate(self.available_colors)
+                Button(580, 50 + i * 50, 40, 40, '', lambda c=color_id: self.select_color(c), self.app, bg_color=CAR_COLORS[color_id])
+                for i, color_id in enumerate(self.available_colors)
             ]
-            if self.available_colors:
-                self.selected_color = self.available_colors[0]
+
+            if not self.available_colors:
+                self.selected_color = None
+                self.instructions = "No more cars to place."
+                self.show_instruction("You placed all cars.")
             else:
                 self.selected_color = None
-                self.instructions = "There is no color to pick!"
+                self.instructions = "Pick a color for next car."
 
     def on_solve(self):
         if not self.target_car_placed:
-            self.instructions = "Put the target car first!"
+            self.instructions = "Place the target car first!"
+            self.show_instruction("You must place red car first.")
             return
         node = Node(self.cars)
-        print(self.cars)
-        self.app.switch_screen(SolverScreen(self.app, node, "Custom Map", car_colors=self.car_id_to_color))
-
-    
-    def draw_car_sprite(self, screen, car):
-        x_px = MARGIN + (car.col - 2) * CELL_SIZE
-        y_px = MARGIN + (car.row - 2) * CELL_SIZE
-        color = CAR_COLORS.get(car.id, (100, 100, 100))
-
-        sprite_map = {
-            (100, 150, 250): {2: "assets/cars/car_8.png", 3: "assets/cars/truck_7.png"},   # Blue
-            (0, 200, 100):   {2: "assets/cars/car_7.png", 3: "assets/cars/truck_6.png"},   # Green
-            (255, 200, 0):   {2: "assets/cars/car_5.png", 3: "assets/cars/truck_8.png"},   # Yellow
-            (138, 43, 226):  {2: "assets/cars/car_4.png", 3: "assets/cars/truck_1.png"},   # Purple
-            (255, 105, 180): {2: "assets/cars/car_12.png", 3: "assets/cars/truck_12.png"}, # Pink
-            (255, 100, 100): {2: "assets/cars/car_0.png"}  # Red goal car (G)
-        }
-
-        sprite_paths = sprite_map.get(color)
-        if sprite_paths and car.size in sprite_paths:
-            path = sprite_paths[car.size]
-            key = (path, car.dir)
-            if not hasattr(self, 'car_sprites'):
-                self.car_sprites = {}
-            if key not in self.car_sprites:
-                self.car_sprites[key] = CarSprite(path, car.size, car.dir, CELL_SIZE)
-            self.car_sprites[key].draw_car(screen, x_px, y_px)
-        else:
-            # fallback rectangle
-            width = CELL_SIZE * (car.size if car.dir == 'h' else 1)
-            height = CELL_SIZE * (car.size if car.dir == 'v' else 1)
-            pygame.draw.rect(screen, color, pygame.Rect(x_px, y_px, width, height), border_radius=10)
+        self.app.switch_screen(SolverScreen(self.app, node, "", car_colors=CAR_COLORS))
