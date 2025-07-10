@@ -166,13 +166,13 @@ class SolverScreen(Screen):
             # self.draw_stats()
             if self.state == 'finished' and self.stats:
 
-                # Only show popup if animation_done is True
+                # Chỉ hiện popup nếu animation_done là True
                 if self.animation_done and not self.victory_popup_shown:
                     popup = VictoryPopup(self.app, self)
                     self.popups.append(popup)
                     self.victory_popup_shown = True
 
-        # Always draw popups
+        # Luôn vẽ các popup
         for popup in self.popups:
             if popup.visible:
                 popup.draw()
@@ -184,14 +184,15 @@ class SolverScreen(Screen):
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # print(event.pos)
-                # If there is popup opened then just work with popup, don't work with button
+                # Nếu có popup đang mở thì chỉ xử lý popup, không xử lý nút
+                if any(popup.visible for popup in self.popups):
                     for popup in self.popups:
                         if popup.visible:
                             popup.handle_event(event)
-                    return  # Avoid anything access the button
+                    return  # Ngăn không cho xử lý nút bên dưới
 
-                # If there is no popup opened, handle like normal
-            for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
+                # Nếu không có popup nào đang mở, xử lý nút như bình thường
+                for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
             for popup in self.popups:
