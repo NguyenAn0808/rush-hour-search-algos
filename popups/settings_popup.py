@@ -44,7 +44,7 @@ class SettingsPopup:
         title_bar_height = 40
         title_bar_x = box_x + (box_width - title_bar_width) // 2
         title_bar_y = box_y + 10  # slightly overlap the top of popup
-        pygame.draw.rect(screen, (100, 150, 200), (title_bar_x, title_bar_y, title_bar_width, title_bar_height), border_radius=12)
+        pygame.draw.rect(screen, (150, 130, 110), (title_bar_x, title_bar_y, title_bar_width, title_bar_height), border_radius=12)
 
         # Title centered in shorter bar
         title_text = self.font.render("Settings", True, (255, 255, 255))

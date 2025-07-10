@@ -2,6 +2,7 @@ import pygame
 from screens.screen import Screen
 from ui.button import Button
 from ui.icon_button import IconButton
+# from ui.sprites import CarSprite
 
 class MenuScreen(Screen):
     def __init__(self, app):
@@ -14,12 +15,13 @@ class MenuScreen(Screen):
             IconButton(650, 10, "assets/settings.png", self.on_settings, 64, self.app)
         ]
         self.background_img = pygame.image.load("assets/menu_bg.jpg").convert()
-        self.title_font = pygame.font.SysFont("Arial", 90, bold=True)
+        self.title_font = pygame.font.SysFont("Papyrus", 80, bold=True)
         self.popups = []
 
     def render(self):
         # Draw background
         self.app.screen.blit(self.background_img, (0, 0))
+        # self.sprite.draw_car(self.app.screen, 80, 80)
         title_surface = self.title_font.render("RUSH HOUR", True, (216, 40, 11))
         title_rect = title_surface.get_rect(center=(360, 120))
         self.app.screen.blit(title_surface, title_rect)

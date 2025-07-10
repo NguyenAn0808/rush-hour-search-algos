@@ -16,15 +16,18 @@ class SelectMapPopup:
         self.app = app
         self.parent = parent_screen
         self.message = "Select a map"
-        self.font = pygame.font.SysFont("Arial", 22)
+        self.font = pygame.font.SysFont("impact", 22)
 
         self.btn_custom = Button(250, 300, 200, 50, "Custom", self.on_custom, self.app)
         self.btn_default = Button(250, 370, 200, 50, "Default", self.on_default, self.app)
 
     def draw(self, screen):
         pygame.draw.rect(screen, (220, 240, 250), (200, 250, 320, 200), border_radius=10)
+        # Title
         text = self.font.render(self.message, True, (0, 0, 0))
-        screen.blit(text, (270, 260))
+        text_rect = text.get_rect(center=(360, 260))
+        screen.blit(text, text_rect)
+        
         self.btn_custom.draw(screen)
         self.btn_default.draw(screen)
 

@@ -7,45 +7,51 @@ class VictoryPopup:
         self.solver_screen = solver_screen
         self.parent_screen = parent_screen  
         self.visible = True
-        self.width = 400
-        self.height = 180  
+        self.width = 420
+        self.height = 200
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.rect = self.surface.get_rect(center=(app.screen.get_width() // 2, app.screen.get_height() // 2))
 
-        self.title_font = pygame.font.SysFont("Arial", 36, bold=True)
-        self.instruction_font = pygame.font.SysFont("Arial", 20, italic=True)
-        self.close_font = pygame.font.SysFont("Arial", 24)
+        self.title_font = pygame.font.SysFont("Segoe UI", 36, bold=True)
+        self.instruction_font = pygame.font.SysFont("Segoe UI", 20, italic=True)
+        self.close_font = pygame.font.SysFont("Arial", 24, bold=True)
 
-        # Nút (X) để đóng popup
-        self.close_button_rect = pygame.Rect(self.rect.right - 40, self.rect.top + 10, 30, 30)
+        self.close_button_rect = pygame.Rect(self.rect.right - 45, self.rect.top + 10, 30, 30)
 
-        # Hiệu ứng fade-in
         self.start_time = time.time()
-        self.animation_duration = 1.0  # 1 giây
+        self.animation_duration = 1.0  # seconds
+
+        self.bg_color = (255, 235, 180, 240)  # desert sand with alpha
+        self.border_color = (160, 110, 60)    # stone-like outline
+        self.text_color = (80, 40, 0)
 
     def draw(self):
         if not self.visible:
             return
 
-        # Tạo hiệu ứng mờ dần xuất hiện
         elapsed = time.time() - self.start_time
         alpha = min(255, int((elapsed / self.animation_duration) * 255))
-        self.surface.fill((220, 240, 250, alpha))  # nền xanh nhạt
+        self.surface.set_alpha(alpha)
 
-        # Dòng tiêu đề Victory
-        title = self.title_font.render("Victory!", True, (0, 128, 0))
-        self.surface.blit(title, title.get_rect(center=(self.width // 2, 60)))
+        # Background with border
+        self.surface.fill(self.bg_color)
+        pygame.draw.rect(self.surface, self.border_color, (0, 0, self.width, self.height), 6, border_radius=20)
 
-        # Dòng hướng dẫn ở dưới
-        instruction = self.instruction_font.render("Close the popup to continue!", True, (80, 80, 80))
-        self.surface.blit(instruction, instruction.get_rect(center=(self.width // 2, 120)))
+        # Title
+        title = self.title_font.render("Victory!", True, self.text_color)
+        self.surface.blit(title, title.get_rect(center=(self.width // 2, 50)))
 
-        # Nút (X) đóng ở góc
-        pygame.draw.rect(self.surface, (200, 50, 50), self.close_button_rect.move(-self.rect.left, -self.rect.top), border_radius=8)
+        # Instruction
+        instruction = self.instruction_font.render("The puzzle is solved! Click X to continue.", True, self.text_color)
+        self.surface.blit(instruction, instruction.get_rect(center=(self.width // 2, 110)))
+
+        # Close button (wooden style)
+        rel_close_rect = self.close_button_rect.move(-self.rect.left, -self.rect.top)
+        pygame.draw.rect(self.surface, (160, 80, 40), rel_close_rect, border_radius=8)
         close_text = self.close_font.render("X", True, (255, 255, 255))
-        self.surface.blit(close_text, close_text.get_rect(center=self.close_button_rect.move(-self.rect.left, -self.rect.top).center))
+        self.surface.blit(close_text, close_text.get_rect(center=rel_close_rect.center))
 
-        # Vẽ popup ra màn hình chính
+        # Draw popup on screen
         self.app.screen.blit(self.surface, self.rect.topleft)
 
     def handle_event(self, event):

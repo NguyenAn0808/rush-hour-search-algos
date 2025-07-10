@@ -7,7 +7,7 @@ class SelectLevelPopup:
         self.app = app
         self.parent = parent_screen
         self.message = "Choose level"
-        self.font = pygame.font.SysFont("Arial", 22)
+        self.font = pygame.font.SysFont("impact", 22)
         self.label_font = pygame.font.SysFont("Arial", 20, bold=True)
 
         self.buttons = []

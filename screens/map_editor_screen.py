@@ -3,6 +3,7 @@ from screens.screen import Screen
 from ui.button import Button
 from model import Car, Node
 from screens.solver_screen import SolverScreen
+from ui.sprites import CarSprite
 
 CELL_SIZE = 80
 GRID_SIZE = 6
@@ -28,10 +29,16 @@ class MapEditorScreen(Screen):
         self.selected_color = 'G'
         self.current_dir = 'h'
         self.car_length = 2
-
+        self.car_id_to_color = {'G': (255, 100, 100),
+                                'A': (100, 150, 250),
+                                'B': (0, 200, 100),
+                                'C': (255, 200, 0),
+                                'D': (138, 43, 226),
+                                'E': (255, 105, 180),
+                            }
         self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
         self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
-        self.font = pygame.font.SysFont("Arial", 18)
+        self.font = pygame.font.SysFont("impact", 20)
 
         self.color_buttons = []
         self.available_colors = ['A', 'B', 'C', 'D', 'E']
@@ -61,10 +68,10 @@ class MapEditorScreen(Screen):
             for col in range(GRID_SIZE):
                 rect = pygame.Rect(MARGIN + col * CELL_SIZE, MARGIN + row * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(self.app.screen, (200, 200, 200), rect, 1)
-                val = self.grid[row][col]
-                if val != '.':
-                    color = CAR_COLORS.get(val, (150, 150, 150))
-                    pygame.draw.rect(self.app.screen, color, rect)
+
+        for car in self.cars:
+            self.draw_car_sprite(self.app.screen, car)
+                
         # Highlight selected cell
         if self.selected_cell:
             row, col = self.selected_cell
@@ -141,6 +148,7 @@ class MapEditorScreen(Screen):
         for r, c in coords:
             self.grid[r][c] = car_id
 
+        self.car_id_to_color[car_id] = CAR_COLORS.get(car_id, (150, 150, 150))
         self.cars.append(Car(id=car_id, dir=dir, row=row + 2, col=col + 2, size=size))
 
         if not self.target_car_placed:
@@ -165,4 +173,34 @@ class MapEditorScreen(Screen):
             return
         node = Node(self.cars)
         print(self.cars)
-        self.app.switch_screen(SolverScreen(self.app, node, "", car_colors=CAR_COLORS))
+        self.app.switch_screen(SolverScreen(self.app, node, "Custom Map", car_colors=self.car_id_to_color))
+
+    
+    def draw_car_sprite(self, screen, car):
+        x_px = MARGIN + (car.col - 2) * CELL_SIZE
+        y_px = MARGIN + (car.row - 2) * CELL_SIZE
+        color = CAR_COLORS.get(car.id, (100, 100, 100))
+
+        sprite_map = {
+            (100, 150, 250): {2: "assets/cars/car_8.png", 3: "assets/cars/truck_7.png"},   # Blue
+            (0, 200, 100):   {2: "assets/cars/car_7.png", 3: "assets/cars/truck_6.png"},   # Green
+            (255, 200, 0):   {2: "assets/cars/car_5.png", 3: "assets/cars/truck_8.png"},   # Yellow
+            (138, 43, 226):  {2: "assets/cars/car_4.png", 3: "assets/cars/truck_1.png"},   # Purple
+            (255, 105, 180): {2: "assets/cars/car_12.png", 3: "assets/cars/truck_12.png"}, # Pink
+            (255, 100, 100): {2: "assets/cars/car_0.png"}  # Red goal car (G)
+        }
+
+        sprite_paths = sprite_map.get(color)
+        if sprite_paths and car.size in sprite_paths:
+            path = sprite_paths[car.size]
+            key = (path, car.dir)
+            if not hasattr(self, 'car_sprites'):
+                self.car_sprites = {}
+            if key not in self.car_sprites:
+                self.car_sprites[key] = CarSprite(path, car.size, car.dir, CELL_SIZE)
+            self.car_sprites[key].draw_car(screen, x_px, y_px)
+        else:
+            # fallback rectangle
+            width = CELL_SIZE * (car.size if car.dir == 'h' else 1)
+            height = CELL_SIZE * (car.size if car.dir == 'v' else 1)
+            pygame.draw.rect(screen, color, pygame.Rect(x_px, y_px, width, height), border_radius=10)

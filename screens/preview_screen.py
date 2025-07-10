@@ -1,9 +1,12 @@
+import random
 import pygame
 from screens.screen import Screen
 from ui.button import Button
 from screens.solver_screen import SolverScreen
 from screens.menu_screen import MenuScreen
+from ui.sprites import CarSprite
 
+CELL_SIZE = 80
 DESERT_SAND = (210, 180, 140)
 
 class PreviewLevelScreen(Screen):
@@ -12,16 +15,60 @@ class PreviewLevelScreen(Screen):
         self.node = node
         self.level_name = level_name
         self.parent = parent_screen
-        self.font = pygame.font.SysFont("Arial", 26, bold=True)
+        self.font = pygame.font.SysFont("Papyrus", 26, bold=True)
         self.sub_font = pygame.font.SysFont("Arial", 18)
-
         self.button_start = Button(220, 570, 100, 40, "Start", self.on_start, self.app)
         self.button_back = Button(420, 570, 100, 40, "Back", self.on_back, self.app)
+        self.car_sprites = {
+            ("G", "H", 2): CarSprite("assets/cars/car_0.png", 2, "H", CELL_SIZE),
+            ("A","V",2): CarSprite("assets/cars/car_1.png", 2, "V", CELL_SIZE),
+            ("B","H",2): CarSprite("assets/cars/car_2.png", 2, "H", CELL_SIZE),
+            ("B","V",2): CarSprite("assets/cars/car_2.png", 2, "V", CELL_SIZE),
+            ("C","H",2): CarSprite("assets/cars/car_3.png", 2, "H", CELL_SIZE),
+            ("C","V",2): CarSprite("assets/cars/car_3.png", 2, "V", CELL_SIZE),
+            ("D","H",2): CarSprite("assets/cars/car_4.png", 2, "H", CELL_SIZE),
+            ("D","V",2): CarSprite("assets/cars/car_4.png", 2, "V", CELL_SIZE),
+            ("E","H",2): CarSprite("assets/cars/car_5.png", 2, "H", CELL_SIZE),
+            ("E","V",2): CarSprite("assets/cars/car_5.png", 2, "V", CELL_SIZE),
+            ("F","H",2): CarSprite("assets/cars/car_6.png", 2, "H", CELL_SIZE),
+            ("F","V",2): CarSprite("assets/cars/car_6.png", 2, "V", CELL_SIZE),
+            ("H","H",2): CarSprite("assets/cars/car_7.png", 2, "H", CELL_SIZE),
+            ("H","V",2): CarSprite("assets/cars/car_7.png", 2, "V", CELL_SIZE),
+            ("I","H",2): CarSprite("assets/cars/car_8.png", 2, "H", CELL_SIZE),
+            ("J","V",2): CarSprite("assets/cars/car_9.png", 2, "V", CELL_SIZE),
+            ("K","V",2): CarSprite("assets/cars/car_10.png", 2, "V", CELL_SIZE),
+            ("N","H",2): CarSprite("assets/cars/car_11.png", 2, "H", CELL_SIZE),
+            ("N","V",2): CarSprite("assets/cars/car_11.png", 2, "V", CELL_SIZE),
+            ("Q","H",2): CarSprite("assets/cars/car_12.png", 2, "H", CELL_SIZE),
+            ("T","V",2): CarSprite("assets/cars/car_13.png", 2, "V", CELL_SIZE),
+            ("U","V",2): CarSprite("assets/cars/car_14.png", 2, "V", CELL_SIZE),
+            ("Y","V",2): CarSprite("assets/cars/car_15.png", 2, "V", CELL_SIZE),
+            ("Z","V",2): CarSprite("assets/cars/car_16.png", 2, "V", CELL_SIZE),
+            ("A","V",3): CarSprite("assets/cars/truck_1.png", 3, "V", CELL_SIZE),
+            ("B","V",3): CarSprite("assets/cars/truck_2.png", 3, "V", CELL_SIZE),
+            ("C","H",3): CarSprite("assets/cars/truck_3.png", 3, "H", CELL_SIZE),
+            ("C","V",3): CarSprite("assets/cars/truck_3.png", 3, "V", CELL_SIZE),
+            ("E","H",3): CarSprite("assets/cars/truck_4.png", 3, "H", CELL_SIZE),
+            ("F","H",3): CarSprite("assets/cars/truck_5.png", 3, "H", CELL_SIZE),
+            ("F","V",3): CarSprite("assets/cars/truck_5.png", 3, "V", CELL_SIZE),
+            ("H","V",3): CarSprite("assets/cars/truck_6.png", 3, "V", CELL_SIZE),
+            ("I","H",3): CarSprite("assets/cars/truck_7.png", 3, "H", CELL_SIZE),
+            ("O","H",3): CarSprite("assets/cars/truck_8.png", 3, "H", CELL_SIZE),
+            ("O","V",3): CarSprite("assets/cars/truck_8.png", 3, "V", CELL_SIZE),
+            ("R","H",3): CarSprite("assets/cars/truck_9.png", 3, "H", CELL_SIZE),
+            ("T","H",3): CarSprite("assets/cars/truck_10.png", 3, "H", CELL_SIZE),
+            ("U","H",3): CarSprite("assets/cars/truck_11.png", 3, "H", CELL_SIZE),
+            ("V","H",3): CarSprite("assets/cars/truck_12.png", 3, "H", CELL_SIZE),
+            ("Y","V",3): CarSprite("assets/cars/truck_13.png", 3, "V", CELL_SIZE),
+        }
+
+        self.sand_surface = pygame.Surface((720, 640), pygame.SRCALPHA)
+        self.add_sand_grains()
 
 
     def render(self):
         self.app.screen.fill(DESERT_SAND)
-
+        self.app.screen.blit(self.sand_surface, (0, 0))
         # Draw title
         title_text = self.font.render(f"Preview: {self.level_name}", True, (0, 0, 0))
         self.app.screen.blit(title_text, (self.app.screen.get_width() // 2 - title_text.get_width() // 2, 20))
@@ -48,6 +95,25 @@ class PreviewLevelScreen(Screen):
         self.app.switch_screen(SolverScreen(self.app, self.node, self.level_name))
 
     def on_back(self):
-    
         self.app.switch_screen(MenuScreen(self.app))
         
+    
+    def add_sand_grains(self):
+        # Create a surface once if it doesn't exist
+        if not hasattr(self, 'sand_surface'):
+            self.sand_surface = pygame.Surface((720, 640), pygame.SRCALPHA)
+
+        num_grains = (720 * 640) // 100  # Adjust density here
+        for _ in range(num_grains):
+            x = random.randint(0, 719)
+            y = random.randint(0, 639)
+
+            # Pick a base color variation from DESERT_SAND (single color or list)
+            base_color = DESERT_SAND if isinstance(DESERT_SAND, tuple) else random.choice(DESERT_SAND)
+            variation = random.randint(-20, 20)
+            grain_color = tuple(max(0, min(255, c + variation)) for c in base_color)
+
+            size = random.randint(1, 2)
+            pygame.draw.circle(self.sand_surface, grain_color, (x, y), size)
+
+    
