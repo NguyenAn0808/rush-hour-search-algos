@@ -4,8 +4,6 @@ from .solution import Solution
 from collections import deque
 
 class BFS(Solution):
-    name = "BFS"
-        
     def calculate_heuristic(self, current_node: Node):
         return 0
     

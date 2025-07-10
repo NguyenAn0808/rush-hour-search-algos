@@ -9,8 +9,6 @@ class AStar(Solution):
     """
     A* search algorithm solution class.
     """
-    name = "AStar"
-    
     def calculate_heuristic(self, current_node: Node):
         return evaluate_advanced_heuristic(current_node.cars)
     

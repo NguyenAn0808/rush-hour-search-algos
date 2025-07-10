@@ -6,8 +6,6 @@ from collections import deque
 MAX_DEPTH = 100
 
 class IDS(Solution):
-    name = "IDS"
-    
     def calculate_heuristic(self, current_node: Node):
         return 0
     

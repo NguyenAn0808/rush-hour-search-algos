@@ -5,8 +5,6 @@ from .solution import Solution
 import heapq
 
 class UCS(Solution):
-    name = "UCS"
-    
     def calculate_heuristic(self, current_node: Node):
         return 0
     
