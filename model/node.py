@@ -55,7 +55,7 @@ class Node:
                 return car
         return None 
     
-    def is_goal(self) -> bool: # Add color soon
+    def is_goal(self) -> bool: 
         car = self.get_goal_car()
         if car is None:
             return False
@@ -98,24 +98,3 @@ class Node:
 
                     action = f"Move {car.id} {name_move}"
                     yield temp_cars, action, new_car 
-    
-    # GUI soon
-    # def final_moves(self, move_cost) -> Node:
-    #     """
-    #     Move goal car right two times to successfully exit the gate
-    #     """
-    #     for _ in range(2):
-    #         goal_car = self.get_goal_car()
-    #         temp_cars = self.cars.copy()
-    #         new_car = Car(goal_car.id, goal_car.dir, goal_car.row, goal_car.col + 1, goal_car.size)
-
-    #         if goal_car in temp_cars:
-    #             temp_cars.remove(goal_car)
-    #             temp_cars.append(new_car)
-            
-    #         # We don't need to calculate heuristic again (Just need to move goal car successfully exit the gate)
-    #         new_node = Node(cars=temp_cars, action = f"Move {goal_car.id} right", parent=self, cost=move_cost, heuristic=0)
-            
-    #         self = new_node 
-
-    #     return self
