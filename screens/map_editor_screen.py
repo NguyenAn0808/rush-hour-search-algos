@@ -32,6 +32,8 @@ class MapEditorScreen(Screen):
 
         self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
         self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
+        self.back_button = Button(30, 500, 100, 40, "Back", self.go_back, self.app)
+
         self.font = pygame.font.SysFont("Arial", 18)
 
         self.color_buttons = []
@@ -45,7 +47,6 @@ class MapEditorScreen(Screen):
 
         self.selected_cell = None
 
-        # Popup instruction
         self.instruction_popup = None
         self.instruction_timer = 0
         self.instruction_duration = 2
@@ -97,14 +98,13 @@ class MapEditorScreen(Screen):
         self.length_button.draw(self.app.screen)
         self.ok_button.draw(self.app.screen)
         self.solve_button.draw(self.app.screen)
+        self.back_button.draw(self.app.screen)
 
-        # Show main instruction
         lines = self.instructions.split('\n')
         for i, line in enumerate(lines):
             text = self.font.render(line, True, (0, 0, 0))
             self.app.screen.blit(text, (MARGIN, 540 + i * 20))
 
-        # Show popup instruction if it is in time
         if self.instruction_popup and (time.time() - self.instruction_timer <= self.instruction_duration):
             popup_surf = pygame.Surface((520, 40))
             popup_surf.fill((255, 255, 180))
@@ -129,14 +129,18 @@ class MapEditorScreen(Screen):
                 if 0 <= row < GRID_SIZE and 0 <= col < GRID_SIZE:
                     self.selected_cell = (row, col)
 
-                # Avoid click OK while running instruction
-                for btn in self.color_buttons + [self.solve_button, self.toggle_dir_button, self.length_button]:
-                    if btn.is_clicked(event.pos):
-                        btn.on_click()
-
                 if self.ok_button.is_clicked(event.pos):
                     if not (self.instruction_popup and time.time() - self.instruction_timer <= self.instruction_duration):
                         self.ok_button.on_click()
+
+                for btn in self.color_buttons + [
+                    self.solve_button,
+                    self.toggle_dir_button,
+                    self.length_button,
+                    self.back_button
+                ]:
+                    if btn.is_clicked(event.pos):
+                        btn.on_click()
 
     def place_car(self):
         if not self.selected_cell:
@@ -144,29 +148,29 @@ class MapEditorScreen(Screen):
             self.instructions = "You must click a cell first."
             return
 
-        if self.target_car_placed and not self.selected_color:
-            self.show_instruction("Pick a color before placing.")
-            self.instructions = "Click a color button first."
-            return
+        if not self.target_car_placed:
+            if self.current_dir != 'h':
+                self.show_instruction("Target car must be horizontal.")
+                self.instructions = "Change direction to H."
+                return
+            if self.car_length != 2:
+                self.show_instruction("Target car must have length 2.")
+                self.instructions = "Change length to 2."
+                return
+            if self.selected_cell[0] != 2:
+                self.show_instruction("Target car must be on row 3.")
+                self.instructions = "Place red car in row 3."
+                return
+        else:
+            if not self.selected_color:
+                self.show_instruction("Pick a color before placing.")
+                self.instructions = "Click a color button first."
+                return
 
         row, col = self.selected_cell
         size = 2 if not self.target_car_placed else self.car_length
         car_id = 'G' if not self.target_car_placed else self.selected_color
         dir = 'h' if not self.target_car_placed else self.current_dir
-
-        if not self.target_car_placed:
-            if row != 2:
-                self.show_instruction("Target car must be on row 3.")
-                self.instructions = "Place target car on row 3."
-                return
-            if dir != 'h':
-                self.show_instruction("Target car must be horizontal.")
-                self.instructions = "Direction must be H."
-                return
-            if size != 2:
-                self.show_instruction("Target car must be size 2.")
-                self.instructions = "Length must be 2."
-                return
 
         coords = []
         try:
@@ -196,7 +200,7 @@ class MapEditorScreen(Screen):
 
         if not self.target_car_placed:
             self.target_car_placed = True
-            self.selected_color = None  # Clear color after placing target
+            self.selected_color = None
             self.show_instruction(self.instruction_queue[5])
             self.instructions = "Now pick a color,\nthen place the next car."
         else:
@@ -223,3 +227,7 @@ class MapEditorScreen(Screen):
             return
         node = Node(self.cars)
         self.app.switch_screen(SolverScreen(self.app, node, "", car_colors=CAR_COLORS))
+
+    def go_back(self):
+        from screens.menu_screen import MenuScreen
+        self.app.switch_screen(MenuScreen(self.app))

@@ -192,6 +192,14 @@ class SolverScreen(Screen):
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # print(event.pos)
+                # Nếu có popup đang mở thì chỉ xử lý popup, không xử lý nút
+                if any(popup.visible for popup in self.popups):
+                    for popup in self.popups:
+                        if popup.visible:
+                            popup.handle_event(event)
+                    return  # Ngăn không cho xử lý nút bên dưới
+
+                # Nếu không có popup nào đang mở, xử lý nút như bình thường
                 for btn in [self.btn_bfs, self.btn_ids, self.btn_ucs, self.btn_astar, self.button_back, self.button_pause, self.button_reset]:
                     if btn.is_clicked(event.pos):
                         btn.on_click()
