@@ -39,6 +39,7 @@ class IDS(Solution):
     def solve(self) -> Node: # IDS
         for depth_limit in range(MAX_DEPTH + 1):
             current_state = self.dls(self.initial_node, depth_limit)
+            # print(self.number_expanded_nodes)
             if current_state:
                 return current_state
             

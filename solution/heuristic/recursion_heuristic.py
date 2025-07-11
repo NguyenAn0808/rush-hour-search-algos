@@ -1,95 +1,115 @@
 from model.car import Car
-from typing import Dict, List, Optional, Tuple, Set
 
-def evaluate_recursion_heuristic(cars: list[Car]) -> int:
+def calculate_minimum_unique_cars(path_to_clear: list[tuple[int, int]], moved_car: Car, visited: set[str], 
+                            cell_of_cars: dict[tuple[int, int]]) -> tuple[int, set[str]]:
     """
-    Calculates a heuristic by following a single, deterministic dependency chain,
-    correctly tracking the collision point to determine move direction and path.
+    Calculates the min cost and min cars need to move to clear a path of cells
     """
-    goal_car = None
+
+    if moved_car.id in visited:
+        return (int(1e9), set()) # Has a cycle, cars cannot be considered twice
+
+    new_visited = visited.copy()
+    new_visited.add(moved_car.id)
+
+    blockers = {}
+
+    # Move to clear the way 
+    for cell in path_to_clear:
+        row, col = cell
+
+        if not (2 <= row <= 7 and 2 <= col <= 7):
+            return (int(1e9), set())
+
+        if cell in cell_of_cars:
+            # Blocked situation -> recursion 
+            new_blocker = cell_of_cars[cell]
+            if new_blocker.id != moved_car.id:
+                blockers[new_blocker.id] = new_blocker
+
+    # print(moved_car, blockers)
+    result = set() # 1 car = 1 cost
+    
+    for blocker in blockers.values():
+        path_to_clear_set = set(path_to_clear) # Use a set for faster lookups
+        
+        max_space_1 = 0 # For UP / LEFT
+        max_space_2 = 0 # For DOWN / RIGHT
+
+        for cell in blocker.get_cells_of_car():
+            if cell in path_to_clear_set:
+                if blocker.dir == 'h':
+                    # Space needed to move LEFT to clear this cell
+                    space_left = (blocker.col + blocker.size) - cell[1]
+                    max_space_1 = max(max_space_1, space_left)
+
+                    space_right = (cell[1] + 1) - blocker.col
+                    max_space_2 = max(max_space_2, space_right)
+
+                else: # 'v'
+                    space_up = (blocker.row + blocker.size) - cell[0]
+                    max_space_1 = max(max_space_1, space_up)
+
+                    space_down = (cell[0] + 1) - blocker.row
+                    max_space_2 = max(max_space_2, space_down)
+        
+        cost_1, moved_cars_1 = (int(1e9), set())
+        cost_2, moved_cars_2 = (int(1e9), set())
+
+        if blocker.dir == 'h':
+            if max_space_1 > 0: # If a left move is needed
+                path_left = [(blocker.row, blocker.col - i) for i in range(1, max_space_1 + 1)]
+                cost_1, moved_cars_1 = calculate_minimum_unique_cars(path_left, blocker, new_visited, cell_of_cars)
+
+            if max_space_2 > 0: # If a right move is needed
+                path_right = [(blocker.row, blocker.col + blocker.size - 1 + i) for i in range(1, max_space_2 + 1)]
+                cost_2, moved_cars_2 = calculate_minimum_unique_cars(path_right, blocker, new_visited, cell_of_cars)
+
+        else: # 'v'
+            if max_space_1 > 0: # If an UP move is needed
+                path_up = [(blocker.row - i, blocker.col) for i in range(1, max_space_1 + 1)]
+                cost_1, moved_cars_1 = calculate_minimum_unique_cars(path_up, blocker, new_visited, cell_of_cars)
+
+            if max_space_2 > 0: # If a DOWN move is needed
+                path_down = [(blocker.row + blocker.size - 1 + i, blocker.col) for i in range(1, max_space_2 + 1)]
+                cost_2, moved_cars_2 = calculate_minimum_unique_cars(path_down, blocker, new_visited, cell_of_cars)
+
+        if cost_1 <= cost_2:
+            result.update(moved_cars_1)
+        else:
+            result.update(moved_cars_2)
+        
+        if cost_1 != int(1e9) or cost_2 != int(1e9):
+            result.add(blocker.id)
+        
+    return (len(result), result)
+
+def evaluate_recursion_heuristic(cars: list[Car]) -> int: 
+    """
+    Recursively counts the minimum number of unique cars need to move out of the goal car to clear the way to exit gate 
+    """
     for car in cars:
         if car.id == 'G':
-            goal_car = car
-            break
+            goal_car = car 
+            break 
 
     if goal_car is None:
-        raise ValueError("Goal car 'G' not found in the node.")
+        raise ValueError("Goal car not found in the node.")
+    
+    cell_of_cars = {}
 
-    cell_of_cars: Dict[Tuple[int, int], Car] = {}
     for car in cars:
-        for cell in car.get_cells_of_car():
+        cells = car.get_cells_of_car()
+        for cell in cells:
             cell_of_cars[cell] = car
 
-    ordered_dependency_chain: List[str] = []
-    cars_in_chain: Set[str] = {goal_car.id}
+    path_exit = []
+    for col in range(goal_car.col + goal_car.size, 8):
+        path_exit.append((goal_car.row, col))
 
-    # --- Step 1: Find the first collision ---
-    current_blocker: Optional[Car] = None
-    collision_point: Optional[Tuple[int, int]] = None
-    start_col = goal_car.col + goal_car.size
-    grid_width = 8
+    cost_exit, moved_exit = calculate_minimum_unique_cars(path_exit, goal_car, set(), cell_of_cars)
 
-    for col in range(start_col, grid_width):
-        cell = (goal_car.row, col)
-        if cell in cell_of_cars:
-            current_blocker = cell_of_cars[cell]
-            collision_point = cell
-            
-    
-    # --- Step 2: Iteratively follow the dependency chain ---
-            while current_blocker and collision_point:
-                ordered_dependency_chain.append(current_blocker.id)
-                cars_in_chain.add(current_blocker.id)
-
-                path_needed_for_move = []
-                
-                # --- REVISED LOGIC: Determine move based on the collision point ---
-                if current_blocker.dir == 'h': # Horizontal car
-                    # Check if moving RIGHT is blocked by a car already in the chain
-                    path_right_cell = (current_blocker.row, current_blocker.col + current_blocker.size)
-                    blocker_on_right = cell_of_cars.get(path_right_cell)
-                    if blocker_on_right and blocker_on_right.id in cars_in_chain:
-                        # Cycle detected! Must try to move RIGHT instead of the default LEFT
-                        # This case is complex and for this problem, we assume we always move away from the goal car's path
-                        pass # Fall through to the default LEFT move logic
-
-                    # To clear the collision point, the car must move LEFT
-                    spaces_to_move = (current_blocker.col + current_blocker.size) - collision_point[1]
-                    for i in range(1, spaces_to_move + 1):
-                        path_needed_for_move.append((current_blocker.row, current_blocker.col - i))
-
-                else: # Vertical car
-                    # Special rule for 'B' to force the non-optimal DOWN move
-                    if current_blocker.id == 'B':
-                        spaces_to_move = collision_point[0] - current_blocker.row + 1
-                        for i in range(1, spaces_to_move + 1):
-                            path_needed_for_move.append((current_blocker.row + current_blocker.size -1 + i, current_blocker.col))
-                    # If collision is at the top of the car, it must move DOWN.
-                    elif collision_point[0] == current_blocker.row:
-                        path_needed_for_move.append((current_blocker.row + current_blocker.size, current_blocker.col))
-                    # Otherwise, collision is at the bottom/middle, so it must move UP.
-                    else:
-                        spaces_to_move = collision_point[0] - (current_blocker.row + current_blocker.size - 1) + 1
-                        for i in range(1, spaces_to_move + 1):
-                            path_needed_for_move.append((current_blocker.row - i, current_blocker.col))
-
-                # --- Step 3: Find the next blocker by checking the required path ---
-                next_blocker_in_chain = None
-                next_collision_point = None
-                for next_cell in path_needed_for_move:
-                    if next_cell in cell_of_cars:
-                        potential_next_blocker = cell_of_cars[next_cell]
-                        if potential_next_blocker.id not in cars_in_chain:
-                            next_blocker_in_chain = potential_next_blocker
-                            next_collision_point = next_cell
-                            break # Found the first blocker on the path, stop searching
-                
-                current_blocker = next_blocker_in_chain
-                collision_point = next_collision_point
-
-            # --- Step 4: Print the final result ---
-            # print("Final ordered dependency chain:")
-            # for car_id in ordered_dependency_chain:
-            #     print(car_id)
+    if cost_exit == int(1e9):
+        return int(1e9)
         
-    return len(ordered_dependency_chain)
+    return cost_exit
