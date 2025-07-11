@@ -31,7 +31,7 @@ class Solution(ABC):
         for temp_cars, action, new_car in current_node.get_next_possible_moves():
             new_cost = self.calculate_cost(current_node.cost, new_car.size)
             h_cost = self.calculate_heuristic(current_node)
-
+            
             new_node = Node(cars = temp_cars, action = action, parent = current_node, cost = new_cost, heuristic = h_cost)
             successors.append(new_node)
 

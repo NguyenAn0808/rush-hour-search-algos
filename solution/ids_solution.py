@@ -3,6 +3,7 @@ from model import Node
 from .solution import Solution
 from collections import deque
 
+import time
 MAX_DEPTH = 100
 
 class IDS(Solution):
@@ -37,8 +38,13 @@ class IDS(Solution):
         return None
                     
     def solve(self) -> Node: # IDS
+        start_time = time.perf_counter()
         for depth_limit in range(MAX_DEPTH + 1):
             current_state = self.dls(self.initial_node, depth_limit)
+            end_time = time.perf_counter()
+
+            if end_time - start_time >= 30:
+                return None
             # print(self.number_expanded_nodes)
             if current_state:
                 return current_state

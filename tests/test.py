@@ -93,10 +93,10 @@ def main():
     all_cars = store_car(map)
     
     A = Node(cars=all_cars)
-    print(A)
+    # print(A)
     # Class solution has acccesible property: init_state, number of expanded nodes, search time, memory usage, total cost, step count
-    solution = AStar(A)
-    print(solution.calculate_heuristic(solution.initial_node))
+    solution = IDS(A)
+    # print(solution.calculate_heuristic(solution.initial_node))
     # goal_node = goal state            
     goal_node, solution.search_time, solution.memory_usage = calculate_used_resourcess(solution)
     # print(solution.initial_node.heuristic)
