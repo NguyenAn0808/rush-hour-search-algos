@@ -32,7 +32,7 @@ class MapEditorScreen(Screen):
 
         self.ok_button = Button(580, 500, 100, 40, "OK", self.place_car, self.app)
         self.solve_button = Button(580, 560, 100, 40, "Complete", self.on_solve, self.app)
-        self.back_button = Button(30, 500, 100, 40, "Back", self.go_back, self.app)
+        self.back_button = Button(30, 560, 100, 40, "Back", self.go_back, self.app)
 
         self.font = pygame.font.SysFont("Arial", 18)
 
@@ -103,7 +103,7 @@ class MapEditorScreen(Screen):
         lines = self.instructions.split('\n')
         for i, line in enumerate(lines):
             text = self.font.render(line, True, (0, 0, 0))
-            self.app.screen.blit(text, (MARGIN, 540 + i * 20))
+            self.app.screen.blit(text, (MARGIN, 530 + i * 20))
 
         if self.instruction_popup and (time.time() - self.instruction_timer <= self.instruction_duration):
             popup_surf = pygame.Surface((520, 40))
