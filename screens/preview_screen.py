@@ -68,12 +68,12 @@ class PreviewLevelScreen(Screen):
             ("Y","V",3): CarSprite("assets/cars/truck_13.png", 3, "V", CELL_SIZE),
         }
 
-        self.sand_surface = pygame.Surface((720, 640), pygame.SRCALPHA)
         self.add_sand_grains()
 
 
     def render(self):
         self.app.screen.fill(DESERT_SAND)
+        self.add_sand_grains()
         self.app.screen.blit(self.sand_surface, (0, 0))
         # Draw title
         title_text = self.font.render(f"Preview: {self.level_name}", True, (0, 0, 0))
@@ -104,22 +104,5 @@ class PreviewLevelScreen(Screen):
         self.app.switch_screen(MenuScreen(self.app))
         
     
-    def add_sand_grains(self):
-        # Create a surface once if it doesn't exist
-        if not hasattr(self, 'sand_surface'):
-            self.sand_surface = pygame.Surface((720, 640), pygame.SRCALPHA)
-
-        num_grains = (720 * 640) // 100  # Adjust density here
-        for _ in range(num_grains):
-            x = random.randint(0, 719)
-            y = random.randint(0, 639)
-
-            # Pick a base color variation from DESERT_SAND (single color or list)
-            base_color = DESERT_SAND if isinstance(DESERT_SAND, tuple) else random.choice(DESERT_SAND)
-            variation = random.randint(-20, 20)
-            grain_color = tuple(max(0, min(255, c + variation)) for c in base_color)
-
-            size = random.randint(1, 2)
-            pygame.draw.circle(self.sand_surface, grain_color, (x, y), size)
 
     

@@ -14,7 +14,7 @@ class LoadingScreen(Screen):
         # Load solved map backgrounds
         self.backgrounds = []
         bg_folder = "assets/loading_bg"
-        for i in range(1, 9):  
+        for i in range(1, 11):  
             path = os.path.join(bg_folder, f"solved_{i}.png")
             if os.path.exists(path):
                 image = pygame.image.load(path).convert()
