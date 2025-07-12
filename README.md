@@ -165,7 +165,7 @@ The map editor allows you to place cars one by one. The first car you place will
 **2. Finalize and Start the Puzzle**
 Once you are finished with your layout, click the **Complete** button. This will generate your puzzle and take you to the solver screen.
 <p align="center">
-  <img src="./assets/custom_map.png" alt="Custom map" width="50%"/>
+  <img src="./assets/map_custom.png" alt="Custom map" width="50%"/>
 </p>
 
 **3. Solve Your Custom Puzzle**
