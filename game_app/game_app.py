@@ -7,7 +7,11 @@ class GameApp:
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
-        self.screen = pygame.display.set_mode((720, 640))
+        infoObject = pygame.display.Info()
+        screen_width = infoObject.current_w
+        screen_height = infoObject.current_h - 65
+
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Rush Hour")
         pygame.display.set_icon(pygame.image.load("assets/logo.png"))
         self.clock = pygame.time.Clock()

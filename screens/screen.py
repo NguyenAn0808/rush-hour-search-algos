@@ -3,7 +3,7 @@ import pygame
 import random
 
 class Screen(ABC):
-    def __init__(self, app):
+    def __init__(self, app=None):
         self.app = app
         self.popups = []
         self.sand_surface = None
